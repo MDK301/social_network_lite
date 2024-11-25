@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/presentation/components/my_button.dart';
 import 'package:social_network_lite/featured/auth/presentation/components/my_text_field.dart';
+import 'package:social_network_lite/featured/auth/presentation/cubits/auth_cubit.dart';
 
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+  final void Function()? togglePages;
+
+  const RegisterPage({super.key, this.togglePages});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -16,6 +20,48 @@ class _RegisterPageState extends State<RegisterPage> {
   final pwController = TextEditingController();
   final confirmpwController = TextEditingController();
 
+  void register() {
+      // prepare info
+    final String name = nameController.text;
+    final String email = emailController.text;
+    final String pw = pwController.text;
+    final String confirmPW = confirmpwController.text;
+
+      // auth cubit
+    final authCubit = context.read<AuthCubit>();
+
+      // ensure the fields aren't empty
+    if (email.isNotEmpty &&
+        name.isNotEmpty &&
+        pw.isNotEmpty &&
+        confirmPW.isNotEmpty) {
+      // ensure passwords match
+      if (pw == confirmPW) {
+        authCubit.register(name, email, pw);
+      }
+
+      // passwords don't match
+      else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Passwords do not match!")),
+        );
+      }
+    }
+
+      // fields are empty -> display error
+    else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please complete all fields")));
+    }
+  }
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    pwController.dispose();
+    confirmpwController.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,14 +123,28 @@ class _RegisterPageState extends State<RegisterPage> {
                 const SizedBox(height: 25),
 
                 // login button
-                MyButton(onTap: () {}, text: "Login"),
+                MyButton(onTap: register, text: "Login"),
                 const SizedBox(height: 50),
 
                 // already a member? login now
-                Text(
-                  "Already a member? Login now",
-                  style:
-                  TextStyle(color: Theme.of(context).colorScheme.primary),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Already a member?",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary),
+                    ),
+                    GestureDetector(
+                      onTap: widget.togglePages,
+                      child: Text(
+                        " Login now",
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.inversePrimary,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
                 )
               ],
             ),

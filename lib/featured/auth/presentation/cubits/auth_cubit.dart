@@ -36,12 +36,16 @@ class AuthCubit extends Cubit<AuthState> {
       final user = await authRepo.loginWithEmailPassword(email, pw);
 
       if (user != null) {
+        print("inif1");
         _currentUser = user;
         emit(Authenticated(user));
       } else {
+        print("inif2");
+
         emit(Unauthenticated());
       }
     } catch (e) {
+      print("catch error");
       emit(AuthError(e.toString()));
       emit(Unauthenticated());
     }
@@ -63,10 +67,10 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthError(e.toString()));
       emit(Unauthenticated());
     }
-// logout
-    Future<void> logout() async {
-      authRepo.logout();
-      emit(Unauthenticated());
-    }
+  }
+  // logout
+  Future<void> logout() async {
+    authRepo.logout();
+    emit(Unauthenticated());
   }
 }
