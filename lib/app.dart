@@ -22,12 +22,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //provider cubit to app
+
     return MultiBlocProvider(
       providers: [
         // auth cubit
         BlocProvider<AuthCubit>(
-          create: (context) =>
-              AuthCubit(authRepo: authRepo)..checkAuth, // BlocProvider
+          create: (context) => AuthCubit(authRepo: authRepo)..checkAuth(),
         ),
 
         //profile cubit
@@ -52,10 +52,14 @@ class MyApp extends StatelessWidget {
 
               // loading..
               else {
+                print("authState");
+                print(authState);
+
                 return const Scaffold(
                   body: Center(
-
-                    child: CircularProgressIndicator(color: Colors.red,),
+                    child: CircularProgressIndicator(
+                      color: Colors.red,
+                    ),
                   ),
                 );
               }

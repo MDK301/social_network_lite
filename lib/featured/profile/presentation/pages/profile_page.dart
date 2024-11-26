@@ -18,7 +18,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   // cubits
   late final authCubit = context.read<AuthCubit>();
-  late final profileCubit = context.read<ProfileCubit>();
+  late final profileCubit = context .read<ProfileCubit>();
 
   // current user
   late AppUser? currentUser = authCubit.currentUser;
@@ -44,7 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
           return Scaffold(
             appBar: AppBar(
-              title: Text(currentUser!.email),
+              title: Text(user.name),
               foregroundColor: Theme.of(context).colorScheme.primary,
             ),
             // BODY

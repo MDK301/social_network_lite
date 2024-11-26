@@ -19,8 +19,8 @@ class ProfileUser extends AppUser {
         uid: uid,
         email: email,
         name: name,
-        bio: bio,
-        profileImageUrl: profileImageUrl);
+        bio: newBio??bio,
+        profileImageUrl: newprofileImageUrl??profileImageUrl);
   }
 
   //chuyển profile sang json
