@@ -6,7 +6,7 @@ import 'package:social_network_lite/featured/auth/presentation/pages/register_pa
 import 'package:social_network_lite/themes/dark_mode.dart';
 
 import 'app.dart';
-import 'firebase_options.dart';
+import 'config/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
