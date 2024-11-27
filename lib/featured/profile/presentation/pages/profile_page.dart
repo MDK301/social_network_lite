@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart';
 import 'package:social_network_lite/featured/auth/presentation/cubits/auth_cubit.dart';
 import 'package:social_network_lite/featured/profile/presentation/components/bio_box.dart';
+import 'package:social_network_lite/featured/profile/presentation/pages/edit_profile_page.dart';
 
 import '../cubits/profile_cubit.dart';
 import '../cubits/profile_states.dart';
@@ -47,6 +48,19 @@ class _ProfilePageState extends State<ProfilePage> {
             appBar: AppBar(
               title: Text(user.name),
               foregroundColor: Theme.of(context).colorScheme.primary,
+              actions: [
+                // edit profile button
+                IconButton(
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditProfilePage(user:user),
+                    ),
+                  ),
+                  icon: const Icon(Icons.settings),
+                )
+
+              ],
             ),
             // BODY
 
@@ -78,22 +92,43 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
 
-                const SizedBox(
-                  height: 25,
-                ),
+                const SizedBox( height: 25),
 
                 //bio box
-                Row(
-                  children: [
-                    Text(
-                      "Bio",
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    )
-                  ],
+                Padding(
+                  padding: const EdgeInsets.only(left: 25.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Bio",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
+
+                const SizedBox( height: 25),
+
                 BioBox(text: user.bio),
+
+
+                //posts
+                Padding(
+                  padding: const EdgeInsets.only(left: 25.0,top: 25),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Posts",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+
               ],
             ),
           );
