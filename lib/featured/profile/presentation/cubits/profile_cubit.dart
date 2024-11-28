@@ -83,6 +83,7 @@ class ProfileCubit extends Cubit<ProfileState> {
       // re-fetch the updated profile
       await fetchUserProfile(uid);
     } catch (e) {
+      print('in catch re-fetch the updated profile');
       emit(ProfileError("Error updating profile: $e"));
     }
   }
