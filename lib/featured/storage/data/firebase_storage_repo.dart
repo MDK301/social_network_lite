@@ -6,7 +6,7 @@ import 'package:social_network_lite/featured/storage/domain/storage_repo.dart';
 
 class FirebaseStorageRepo implements StorageRepo {
   final FirebaseStorage storage = FirebaseStorage.instance;
-
+  //=======================================PROFILE PICTURES=============================================
   //mobile platform
   @override
   Future<String?> uploadProfileImageMobile(String path, String fileName) {
@@ -19,10 +19,9 @@ class FirebaseStorageRepo implements StorageRepo {
     return _uploadFileBytes(fileBytes, fileName, "profile_images");
   }
 
-  //HELP TO UPLOAD TO STORAGE
+  //=================================HELP TO UPLOAD TO STORAGE=============================================
   //mobile platform(file)
-  Future<String?> _uploadFile(
-      String path, String fileName, String folder) async {
+  Future<String?> _uploadFile( String path, String fileName, String folder) async {
     try {
       //get file
       final file = File(path);
@@ -42,8 +41,7 @@ class FirebaseStorageRepo implements StorageRepo {
     }
   }
 
-  Future<String?> _uploadFileBytes(
-      Uint8List fileBytes, String fileName, String folder) async {
+  Future<String?> _uploadFileBytes(Uint8List fileBytes, String fileName, String folder) async {
     try {
       // find place to store
       final storageRef = storage.ref().child('$folder/$fileName');
@@ -58,5 +56,18 @@ class FirebaseStorageRepo implements StorageRepo {
     } catch (e) {
       return null;
     }
+  }
+
+  //===========================================POST PICTURES=============================================
+  //mobile platform
+  @override
+  Future<String?> uploadPostImageMobile(String path, String fileName) {
+    return _uploadFile(path, fileName, "post_images");
+  }
+
+  //web platform
+  @override
+  Future<String?> uploadPostImageWeb(Uint8List fileBytes, String fileName) {
+    return _uploadFileBytes(fileBytes, fileName, "post_images");
   }
 }
