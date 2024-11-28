@@ -21,7 +21,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   // cubits
   late final authCubit = context.read<AuthCubit>();
-  late final profileCubit = context .read<ProfileCubit>();
+  late final profileCubit = context.read<ProfileCubit>();
 
   // current user
   late AppUser? currentUser = authCubit.currentUser;
@@ -55,12 +55,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EditProfilePage(user:user),
+                      builder: (context) => EditProfilePage(user: user),
                     ),
                   ),
                   icon: const Icon(Icons.settings),
                 )
-
               ],
             ),
             // BODY
@@ -70,8 +69,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 //email
                 Text(
                   user.email,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary),
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
                 const SizedBox(height: 25),
 
@@ -79,15 +78,28 @@ class _ProfilePageState extends State<ProfilePage> {
                 CachedNetworkImage(
                   imageUrl: user.profileImageUrl,
                   //loading...
-                  placeholder: (context,url)=>const CircularProgressIndicator(),
+                  placeholder: (context, url) =>
+                      const CircularProgressIndicator(),
 
                   //error -> failed to load
-                  errorWidget: (context,url,error)=>Icon(Icons.person,size: 72,color: Theme.of(context).colorScheme.primary,),
+                  errorWidget: (context, url, error) => Icon(
+                    Icons.person,
+                    size: 72,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   //loaded
-                  imageBuilder: (context,imageProvider)=>Image(image: imageProvider,fit: BoxFit.cover,),
+                  imageBuilder: (context, imageProvider) => Container(
+                    height: 120,
+                    width: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                          image: imageProvider, fit: BoxFit.cover),
+                    ),
+                  ),
                 ),
 
-                const SizedBox( height: 25),
+                const SizedBox(height: 25),
 
                 //bio box
                 Padding(
@@ -104,14 +116,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
 
-                const SizedBox( height: 25),
+                const SizedBox(height: 25),
 
                 BioBox(text: user.bio),
 
-
                 //posts
                 Padding(
-                  padding: const EdgeInsets.only(left: 25.0,top: 25),
+                  padding: const EdgeInsets.only(left: 25.0, top: 25),
                   child: Row(
                     children: [
                       Text(
@@ -123,7 +134,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                 ),
-
               ],
             ),
           );
