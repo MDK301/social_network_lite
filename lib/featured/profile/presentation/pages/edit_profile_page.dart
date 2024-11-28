@@ -30,6 +30,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   //từ web
   Uint8List? webImage;
 
+  //bio textcontroller
   final bioTextController = TextEditingController();
 
   // pick image
@@ -138,7 +139,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       :
                       // display selected image for web
                       (kIsWeb && webImage != null)
-                          ? Image.memory(webImage!)
+                          ? Image.memory(webImage!,fit: BoxFit.cover,)
                           :
                           // no image selected -> display existing profile pic
                           CachedNetworkImage(

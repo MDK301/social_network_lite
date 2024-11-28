@@ -60,15 +60,16 @@ class ProfileCubit extends Cubit<ProfileState> {
         }
 
         // for web
-      } else if (imageWebBytes != null) {
-        //upload
-        imageDownloadUrl =
-            await storageRepo.uploadProfileImageWeb(imageWebBytes, uid);
-      }
+        else if (imageWebBytes != null) {
+          //upload
+          imageDownloadUrl =
+              await storageRepo.uploadProfileImageWeb(imageWebBytes, uid);
+        }
 
-      if (imageDownloadUrl == null) {
-        emit(ProfileError("Failed to upload image"));
-        return;
+        if (imageDownloadUrl == null) {
+          emit(ProfileError("Failed to upload image"));
+          return;
+        }
       }
 
       // update new profile
