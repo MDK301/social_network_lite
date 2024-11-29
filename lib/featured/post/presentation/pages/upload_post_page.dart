@@ -70,6 +70,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
       );
       return;
     }
+    print(currentUser!.name);
     // create a new post object
     final newPost = Post(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -78,6 +79,8 @@ class _UploadPostPageState extends State<UploadPostPage> {
       text: textController.text,
       imageUrl: '',
       timestamp: DateTime.now(),
+      likes:[],
+
     );
 
     // post cubit
