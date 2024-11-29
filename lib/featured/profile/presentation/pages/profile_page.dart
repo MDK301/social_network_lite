@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart';
 import 'package:social_network_lite/featured/auth/presentation/cubits/auth_cubit.dart';
+import 'package:social_network_lite/featured/post/presentation/cubits/post_cubit.dart';
+import 'package:social_network_lite/featured/post/presentation/cubits/post_states.dart';
 import 'package:social_network_lite/featured/profile/presentation/components/bio_box.dart';
 import 'package:social_network_lite/featured/profile/presentation/pages/edit_profile_page.dart';
 
+import '../../../post/presentation/component/post_tile.dart';
 import '../cubits/profile_cubit.dart';
 import '../cubits/profile_states.dart';
 
@@ -26,6 +29,9 @@ class _ProfilePageState extends State<ProfilePage> {
   // current user
   late AppUser? currentUser = authCubit.currentUser;
 
+  //posts
+  int postCount = 0;
+
   // on startup,
   @override
   void initState() {
@@ -37,7 +43,6 @@ class _ProfilePageState extends State<ProfilePage> {
   // BUILD UI
   @override
   Widget build(BuildContext context) {
-    // SCAFFOLD
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         // loaded
@@ -45,9 +50,10 @@ class _ProfilePageState extends State<ProfilePage> {
           //get loaded user
           final user = state.profileUser;
 
+          // SCAFFOLD
           return Scaffold(
             appBar: AppBar(
-              title: Text(user.name),
+              title: Center(child: Text(user.name)),
               foregroundColor: Theme.of(context).colorScheme.primary,
               actions: [
                 // edit profile button
@@ -62,15 +68,18 @@ class _ProfilePageState extends State<ProfilePage> {
                 )
               ],
             ),
-            // BODY
 
-            body: Column(
+
+            // BODY
+            body: ListView(
               children: [
                 //email
-                Text(
-                  user.email,
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.primary),
+                Center(
+                  child: Text(
+                    user.email,
+                    style:
+                        TextStyle(color: Theme.of(context).colorScheme.primary),
+                  ),
                 ),
                 const SizedBox(height: 25),
 
@@ -120,6 +129,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 BioBox(text: user.bio),
 
+                const SizedBox(height: 15),
+
                 //posts
                 Padding(
                   padding: const EdgeInsets.only(left: 25.0, top: 25),
@@ -134,6 +145,47 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                 ),
+
+                const SizedBox(height: 5),
+
+                // list of posts from this user
+                BlocBuilder<PostCubit, PostState>(builder: (context, state) {
+                  // posts loaded..
+                  if (state is PostsLoaded) {
+                    // filter posts by user id
+                    final userPosts = state.posts
+                        .where((post) => post.userId == widget.uid)
+                        .toList();
+
+                    postCount = userPosts.length;
+
+                    return ListView.builder(
+                      itemCount: postCount,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        // get individual post
+                        final post = userPosts[index];
+
+                        // return as post tile UI
+                        return PostTile(
+                          post: post,
+                          onDeletePressed: () =>
+                              context.read<PostCubit>().deletePost(post.id),
+                        );
+                      },
+                    );
+                  }
+
+                  // posts loading..
+                  else if (state is PostsLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    return const Center(
+                      child: Text("No posts.."),
+                    );
+                  }
+                })
               ],
             ),
           );

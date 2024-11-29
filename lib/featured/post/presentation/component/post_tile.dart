@@ -12,6 +12,7 @@ import 'package:social_network_lite/featured/post/presentation/cubits/post_cubit
 import 'package:social_network_lite/featured/post/presentation/cubits/post_states.dart';
 import 'package:social_network_lite/featured/profile/domain/entities/profile_user.dart';
 import 'package:social_network_lite/featured/profile/presentation/cubits/profile_cubit.dart';
+import 'package:social_network_lite/featured/profile/presentation/pages/profile_page.dart';
 
 import '../../domain/entities/comment.dart';
 
@@ -159,8 +160,8 @@ class _PostTileState extends State<PostTile> {
     final newComment = Comment(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       postId: widget.post.id,
-      userId: widget.post.userId,
-      userName: widget.post.userName,
+      userId: currentUser!.uid,
+      userName: currentUser!.name,
       text: commentTextController.text,
       timestamp: DateTime.now(),
     );
@@ -184,55 +185,65 @@ class _PostTileState extends State<PostTile> {
       child: Column(
         children: [
           //topsection
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                // profile pic
-                postUser?.profileImageUrl != null
-                    ? CachedNetworkImage(
-                        imageUrl: postUser!.profileImageUrl,
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.person),
-                        imageBuilder: (context, imageProvider) => Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: imageProvider,
-                              fit: BoxFit.cover,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(context,MaterialPageRoute(
+                  builder: (context) => ProfilePage(
+                    uid: widget.post.userId,
+                  ),
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  // profile pic
+                  postUser?.profileImageUrl != null
+                      ? CachedNetworkImage(
+                          imageUrl: postUser!.profileImageUrl,
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.person),
+                          imageBuilder: (context, imageProvider) => Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                    : const Icon(Icons.person),
+                        )
+                      : const Icon(Icons.person),
 
-                SizedBox(
-                  width: 10,
-                ),
+                  SizedBox(
+                    width: 10,
+                  ),
 
-                //name
-                Text(
-                  widget.post.userName,
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.inversePrimary,
-                      fontWeight: FontWeight.bold),
-                ),
+                  //name
+                  Text(
+                    widget.post.userName,
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        fontWeight: FontWeight.bold),
+                  ),
 
-                const Spacer(),
+                  const Spacer(),
 
-                //delete button
-                if (isOwnPost)
-                  GestureDetector(
-                    onTap: showOptions,
-                    child: Icon(
-                      Icons.delete,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  )
-              ],
+                  //delete button
+                  if (isOwnPost)
+                    GestureDetector(
+                      onTap: showOptions,
+                      child: Icon(
+                        Icons.delete,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    )
+                ],
+              ),
             ),
           ),
 
@@ -356,7 +367,9 @@ class _PostTileState extends State<PostTile> {
                       final comment = post.comments[index];
 
                       // comment title UI
-                      return CommentTile(comment: comment,);
+                      return CommentTile(
+                        comment: comment,
+                      );
                     },
                   );
                 }
