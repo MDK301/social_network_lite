@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_network_lite/featured/post/domain/entities/comment.dart';
 import 'package:social_network_lite/featured/post/domain/entities/post.dart';
 import 'package:social_network_lite/featured/post/domain/repos/post_repo.dart';
 import 'package:social_network_lite/featured/storage/domain/storage_repo.dart';
@@ -72,9 +73,29 @@ class PostCubit extends Cubit<PostState> {
   Future<void> toggleLikePost(String postId, String userId) async {
     try {
       await postRepo.toggleLikePost(postId, userId);
-      fetchAllPosts();
     } catch (e) {
       emit(PostsError("Failed to toggle like: $e"));
     }
   }
+
+  // add a comment to a post
+  Future<void> addComment(String postId, Comment comment) async {
+    try {
+      await postRepo.addComments(postId, comment);
+      await fetchAllPosts();
+    } catch (e) {
+      emit(PostsError("Failed to add comment: $e"));
+    }
+  }
+
+// delete comment from a post
+  Future<void> deleteComment(String postId, String commentId) async {
+    try {
+      await postRepo.deleteComments(postId, commentId);
+      await fetchAllPosts();
+    } catch (e) {
+      emit(PostsError("Failed to delete comment: $e"));
+    }
+  }
+
 }

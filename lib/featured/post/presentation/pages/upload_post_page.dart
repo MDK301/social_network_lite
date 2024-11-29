@@ -80,6 +80,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
       imageUrl: '',
       timestamp: DateTime.now(),
       likes:[],
+      comments:[],
 
     );
 
