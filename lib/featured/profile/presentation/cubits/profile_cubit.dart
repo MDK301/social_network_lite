@@ -38,7 +38,6 @@ class ProfileCubit extends Cubit<ProfileState> {
     return user;
   }
 
-
   // update bio and or profile picture
   Future<void> updateProfile({required String uid, String? newBio, Uint8List? imageWebBytes, String? imageMobilePath,}) async {
     emit(ProfileLoading());
@@ -89,6 +88,17 @@ class ProfileCubit extends Cubit<ProfileState> {
     } catch (e) {
       print('in catch re-fetch the updated profile');
       emit(ProfileError("Error updating profile: $e"));
+    }
+  }
+
+  //toggle follow/unfollow
+  Future<void> toggleFollow(String currentUserId, String targetUserId) async {
+    try {
+      await profileRepo.toggleFollow(currentUserId, targetUserId);
+
+      // await fetchUserProfile(targetUserId);
+    } catch (e) {
+      emit(ProfileError("Error toggling follow: $e"));
     }
   }
 }

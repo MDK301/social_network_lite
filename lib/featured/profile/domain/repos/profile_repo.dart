@@ -3,4 +3,5 @@ import 'package:social_network_lite/featured/profile/domain/entities/profile_use
 abstract class ProfileRepo {
   Future<ProfileUser?> fetchUserProfile(String uid);
   Future<void> updateProfile(ProfileUser updatedProfile);
+  Future<void> toggleFollow(String currentUid, String targetUid);
 }

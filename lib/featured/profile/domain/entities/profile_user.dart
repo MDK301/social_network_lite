@@ -3,6 +3,8 @@ import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart'
 class ProfileUser extends AppUser {
   final String bio;
   final String profileImageUrl;
+  final List<String> followers;
+  final List<String> following;
 
   ProfileUser({
     required super.uid,
@@ -10,17 +12,25 @@ class ProfileUser extends AppUser {
     required super.name,
     required this.bio,
     required this.profileImageUrl,
+    required this.followers,
+    required this.following,
   });
 
   //method to opdate profile user
 
-  ProfileUser copyWith({String? newBio, String? newprofileImageUrl}) {
+  ProfileUser copyWith({String? newBio,
+    String? newprofileImageUrl,
+    List<String>? newFollowers,
+    List<String>? newFollowing,
+  }) {
     return ProfileUser(
         uid: uid,
         email: email,
         name: name,
-        bio: newBio??bio,
-        profileImageUrl: newprofileImageUrl??profileImageUrl);
+        bio: newBio ?? bio,
+        profileImageUrl: newprofileImageUrl ?? profileImageUrl,
+        followers: newFollowers ?? followers,
+        following: newFollowing ?? following);
   }
 
   //chuyển profile sang json
@@ -30,7 +40,9 @@ class ProfileUser extends AppUser {
       'email': email,
       'name': name,
       'bio': bio,
-      'profileImageUrl': profileImageUrl
+      'profileImageUrl': profileImageUrl,
+      'followers': followers,
+      'following': following,
     };
   }
 
@@ -40,8 +52,10 @@ class ProfileUser extends AppUser {
       uid: json['uid'],
       email: json['email'],
       name: json['name'],
-      bio: json['bio']??'',
-      profileImageUrl: json['profileImageUrl']??'',
+      bio: json['bio'] ?? '',
+      profileImageUrl: json['profileImageUrl'] ?? '',
+      followers: List<String>.from(json['followers'] ?? []),
+      following: List<String>.from(json['following'] ?? []),
     );
   }
 }
