@@ -8,6 +8,7 @@ import 'package:social_network_lite/featured/post/presentation/cubits/post_state
 import 'package:social_network_lite/featured/profile/presentation/components/bio_box.dart';
 import 'package:social_network_lite/featured/profile/presentation/components/follow_button.dart';
 import 'package:social_network_lite/featured/profile/presentation/pages/edit_profile_page.dart';
+import 'package:social_network_lite/featured/profile/presentation/pages/follower_page.dart';
 
 import '../../../post/presentation/component/post_tile.dart';
 import '../components/profile_stats.dart';
@@ -39,6 +40,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     // load user profile data
+
     profileCubit.fetchUserProfile(widget.uid);
   }
 
@@ -156,8 +158,17 @@ class _ProfilePageState extends State<ProfilePage> {
                 //profile stats
                 ProfileStats(
                   postCount: postCount,
-                  followerCount: 0,
-                  followingCount: 0,
+                  followerCount: user.followers.length,
+                  followingCount: user.following.length,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FollowerPage(
+                        followers: user.followers,
+                        following: user.following,
+                      ),
+                    ),
+                  ), // ProfileStats
                 ),
 
                 const SizedBox(height: 25),
@@ -217,7 +228,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         .where((post) => post.userId == widget.uid)
                         .toList();
 
-                    postCount = userPosts.length;
+                    // Update postCount
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (postCount != userPosts.length) {
+                        setState(() {
+                          postCount = userPosts.length;
+                        });
+                      }
+                    });
 
                     return ListView.builder(
                       itemCount: postCount,

@@ -7,6 +7,8 @@ import 'package:social_network_lite/featured/post/data/firebase_post_repo.dart';
 import 'package:social_network_lite/featured/post/presentation/cubits/post_cubit.dart';
 import 'package:social_network_lite/featured/profile/data/firebase_profile_repo.dart';
 import 'package:social_network_lite/featured/profile/presentation/cubits/profile_cubit.dart';
+import 'package:social_network_lite/featured/search/data/firebase_search_repo.dart';
+import 'package:social_network_lite/featured/search/presentation/cubits/search_cubit.dart';
 import 'package:social_network_lite/featured/storage/data/firebase_storage_repo.dart';
 import 'package:social_network_lite/featured/storage/domain/storage_repo.dart';
 import 'package:social_network_lite/themes/dark_mode.dart';
@@ -26,6 +28,8 @@ class MyApp extends StatelessWidget {
 
   //post repo
   final firebasepostRepo=FirebasePostRepo();
+  //search repo
+  final firebasesearchRepo=FirebaseSearchRepo();
 
   MyApp({super.key});
 
@@ -51,8 +55,13 @@ class MyApp extends StatelessWidget {
             postRepo: firebasepostRepo,
             storageRepo: firebasestorageRepo,
           ),
-        ), // PostCubit
-// BlocProvider
+        ),
+
+        //search cubit
+        BlocProvider<SearchCubit>(
+          create: (context) => SearchCubit(searchRepo: firebasesearchRepo),
+          // BlocProvider
+        ),
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
