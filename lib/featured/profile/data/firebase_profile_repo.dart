@@ -85,7 +85,6 @@ class FirebaseProfileRepo implements ProfileRepo {
             await firebaseFirestore.collection('users').doc(currentUid).update({
               'following': FieldValue.arrayUnion([targetUid])
             });
-
             await firebaseFirestore.collection('users').doc(targetUid).update({
               'followers': FieldValue.arrayUnion([currentUid])
             });

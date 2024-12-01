@@ -35,3 +35,6 @@ class _AuthPageState extends State<AuthPage> {
     }
   }
 }
+//add friend
+//thong tin ca nhan (ngay thang nam sinh, noi o, noi hoc)
+// chat gửi file, gửi hình

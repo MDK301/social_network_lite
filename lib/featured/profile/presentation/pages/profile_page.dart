@@ -9,6 +9,7 @@ import 'package:social_network_lite/featured/profile/presentation/components/bio
 import 'package:social_network_lite/featured/profile/presentation/components/follow_button.dart';
 import 'package:social_network_lite/featured/profile/presentation/pages/edit_profile_page.dart';
 import 'package:social_network_lite/featured/profile/presentation/pages/follower_page.dart';
+import 'package:social_network_lite/responsive/constrainEdgeInsets_scaffold.dart';
 
 import '../../../post/presentation/component/post_tile.dart';
 import '../components/profile_stats.dart';
@@ -95,7 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
           final user = state.profileUser;
 
           // SCAFFOLD
-          return Scaffold(
+          return ConstrainedScaffold(
             appBar: AppBar(
               title: Center(child: Text(user.name)),
               foregroundColor: Theme.of(context).colorScheme.primary,
@@ -270,7 +271,7 @@ class _ProfilePageState extends State<ProfilePage> {
         }
         // loading...
         else if (state is ProfileLoading) {
-          return const Scaffold(
+          return const ConstrainedScaffold(
             body: Center(
               child: CircularProgressIndicator(),
             ),

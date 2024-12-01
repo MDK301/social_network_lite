@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/presentation/components/my_button.dart';
 import 'package:social_network_lite/featured/auth/presentation/components/my_text_field.dart';
 import 'package:social_network_lite/featured/auth/presentation/cubits/auth_cubit.dart';
+import 'package:social_network_lite/responsive/constrainEdgeInsets_scaffold.dart';
 
 class RegisterPage extends StatefulWidget {
   final void Function()? togglePages;
@@ -64,7 +65,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ConstrainedScaffold(
       body: SafeArea(
         child: Center(
           child: Padding(

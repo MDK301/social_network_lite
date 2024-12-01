@@ -8,16 +8,30 @@ class SearchCubit extends Cubit<SearchState> {
   SearchCubit({required this.searchRepo}) : super(SearchInitial());
 
   Future<void> searchUsers(String query) async {
+    emit(SearchLoading());
+
     if (query.isEmpty) {
       emit(SearchInitial());
       return;
     }
 
     try {
-      emit(SearchLoading());
+      print("intry");
       final users = await searchRepo.searchUsers(query);
-      emit(SearchLoaded(users));
 
+
+      // emit(SearchLoaded(users));
+      if (users == null || users.isEmpty) {
+        print("in if ");
+        print(users);
+
+        emit(SearchError('No users found.'));
+      } else {
+        print("in else ");
+        print(users);
+
+        emit(SearchLoaded(users));
+      }
     } catch (e) {
       print(e);
       emit(SearchError("Error fetching search results"));

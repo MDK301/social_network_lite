@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart';
 import 'package:social_network_lite/featured/auth/presentation/components/my_text_field.dart';
 import 'package:social_network_lite/featured/auth/presentation/cubits/auth_cubit.dart';
+import 'package:social_network_lite/responsive/constrainEdgeInsets_scaffold.dart';
 
 import '../../domain/entities/post.dart';
 import '../cubits/post_cubit.dart';
@@ -110,7 +111,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
       builder: (context, state) {
         // loading or uploading..
         if (state is PostsLoading || state is PostUploading) {
-          return const Scaffold(
+          return const ConstrainedScaffold(
             body: Center(
               child: CircularProgressIndicator(),
             ),
@@ -132,7 +133,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
   }
 
   Widget buildUploadPage() {
-    return Scaffold(
+    return ConstrainedScaffold(
       appBar: AppBar(
         title: const Text("Create Post"),
         foregroundColor: Theme.of(context).colorScheme.primary,

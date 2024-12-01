@@ -12,6 +12,8 @@ import 'package:social_network_lite/featured/search/presentation/cubits/search_c
 import 'package:social_network_lite/featured/storage/data/firebase_storage_repo.dart';
 import 'package:social_network_lite/featured/storage/domain/storage_repo.dart';
 import 'package:social_network_lite/themes/dark_mode.dart';
+import 'package:social_network_lite/themes/light_mode.dart';
+import 'package:social_network_lite/themes/theme_cubit.dart';
 
 import 'featured/auth/presentation/cubits/auth_states.dart';
 import 'featured/home/presentation/pages/home_page.dart';
@@ -60,47 +62,59 @@ class MyApp extends StatelessWidget {
         //search cubit
         BlocProvider<SearchCubit>(
           create: (context) => SearchCubit(searchRepo: firebasesearchRepo),
-          // BlocProvider
+        ),
+
+        //theme cubit
+        BlocProvider<ThemeCubit>(
+          create: (context) => ThemeCubit(),
         ),
       ],
-      child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: lightMode,
-          home: BlocConsumer<AuthCubit, AuthState>(
-            builder: (context, authState) {
-              // unauthenticated -> auth page (login/register)
-              if (authState is Unauthenticated) {
-                return const AuthPage();
-              }
 
-              // authenticated -> home page
-              if (authState is Authenticated) {
-                return const HomePage();
-              }
+      //check theme
+      child:  BlocBuilder<ThemeCubit,ThemeData>(
+        builder: (context,currentTheme) {
+          return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: currentTheme,
 
-              // loading..
-              else {
-                print("authState");
-                print(authState);
+              //check auth
+              home: BlocConsumer<AuthCubit, AuthState>(
+                builder: (context, authState) {
+                  // unauthenticated -> auth page (login/register)
+                  if (authState is Unauthenticated) {
+                    return const AuthPage();
+                  }
 
-                return const Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.red,
-                    ),
-                  ),
-                );
-              }
-            },
+                  // authenticated -> home page
+                  if (authState is Authenticated) {
+                    return const HomePage();
+                  }
 
-            // listen for errors.
-            listener: (context, state) {
-              if (state is AuthError) {
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text(state.message)));
-              }
-            },
-          )),
+                  // loading..
+                  else {
+                    print("authState");
+                    print(authState);
+
+                    return const Scaffold(
+                      body: Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.red,
+                        ),
+                      ),
+                    );
+                  }
+                },
+
+                // listen for errors.
+                listener: (context, state) {
+                  if (state is AuthError) {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text(state.message)));
+                  }
+                },
+              ));
+        }
+      ),
     );
   }
 }

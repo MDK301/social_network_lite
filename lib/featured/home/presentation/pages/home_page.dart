@@ -6,6 +6,7 @@ import 'package:social_network_lite/featured/post/presentation/component/post_ti
 import 'package:social_network_lite/featured/post/presentation/cubits/post_cubit.dart';
 import 'package:social_network_lite/featured/post/presentation/cubits/post_states.dart';
 import 'package:social_network_lite/featured/post/presentation/pages/upload_post_page.dart';
+import 'package:social_network_lite/responsive/constrainEdgeInsets_scaffold.dart';
 
 import '../component/my_drawer.dart';
 
@@ -40,7 +41,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ConstrainedScaffold(
       appBar: AppBar(
         title: const Text("Home"),
         foregroundColor: Theme.of(context).colorScheme.primary,

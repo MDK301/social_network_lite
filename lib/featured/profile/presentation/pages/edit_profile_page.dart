@@ -10,6 +10,7 @@ import 'package:social_network_lite/featured/auth/presentation/components/my_tex
 import 'package:social_network_lite/featured/profile/domain/entities/profile_user.dart';
 import 'package:social_network_lite/featured/profile/presentation/cubits/profile_cubit.dart';
 import 'package:social_network_lite/featured/profile/presentation/cubits/profile_states.dart';
+import 'package:social_network_lite/responsive/constrainEdgeInsets_scaffold.dart';
 
 class EditProfilePage extends StatefulWidget {
   final ProfileUser user;
@@ -84,7 +85,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       builder: (context, state) {
         //profile loading...
         if (state is ProfileLoading) {
-          return const Scaffold(
+          return const ConstrainedScaffold(
             body: Center(
               child: Column(
                 children: [
@@ -109,7 +110,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Widget buildEditPage() {
-    return Scaffold(
+    return ConstrainedScaffold(
       appBar: AppBar(
         title: const Text("Edit Profile"),
         foregroundColor: Theme.of(context).colorScheme.primary,
