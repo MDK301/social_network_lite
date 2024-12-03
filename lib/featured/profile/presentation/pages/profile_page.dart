@@ -121,7 +121,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              ChatPage(myId: currentUser!.uid, friendId: widget.uid, friendName: '', chatDocId: '',),
+                              ChatPage(myId: currentUser!.uid, friendId: user.uid, friendName: user.name, chatDocId: '',),
                         ),
                       );
                     } ,
