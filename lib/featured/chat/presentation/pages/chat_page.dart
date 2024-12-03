@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../../profile/domain/entities/profile_user.dart';
+import '../component/messenger_buble.dart';
 
 class ChatPage extends StatefulWidget {
   final String myId;
@@ -45,9 +47,7 @@ class _ChatPageState extends State<ChatPage> {
         child: Column(
           children: [
             Expanded(
-                child: ListView(
-              children: [],
-            ))
+                child: MessengerBubble(messenger: ,isMe:false))
           ],
         ),
       ),
