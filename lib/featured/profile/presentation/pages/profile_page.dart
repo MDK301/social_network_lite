@@ -120,7 +120,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ChatPage(user: user),
+                          builder: (context) =>
+                              ChatPage(myId: currentUser!.uid, friendId: widget.uid, friendName: '', chatDocId: '',),
                         ),
                       );
                     } ,

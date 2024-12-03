@@ -3,8 +3,17 @@ import 'package:flutter/material.dart';
 import '../../../profile/domain/entities/profile_user.dart';
 
 class ChatPage extends StatefulWidget {
-  final ProfileUser user;
-  const ChatPage({super.key, required this.user});
+  final String myId;
+  final String friendId;
+  final String friendName;
+  final String chatDocId;
+
+  const ChatPage(
+      {super.key,
+      required this.myId,
+      required this.friendId,
+      required this.friendName,
+      required this.chatDocId});
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -12,16 +21,34 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
 
+  final TextEditingController _messageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Khởi tạo các listener và xử lý ban đầu
+  }
+  @override
+  void dispose() {
+    _messageController.dispose();
+    // Hủy bỏ các listener và xử lý dọn dẹp
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("dummy"),
+        title: Text(widget.friendName),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          children: [Expanded(child: ListView(children: [],))],
+          children: [
+            Expanded(
+                child: ListView(
+              children: [],
+            ))
+          ],
         ),
       ),
     );
