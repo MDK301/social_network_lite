@@ -128,7 +128,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             myId: currentUser!.uid,
                             friendId: user.uid,
                             friendName: user.name,
-                            chatDocId: ChatCubit.,
+                            chatDocId: ChatCubit ,
                           ),
                         ),
                       );

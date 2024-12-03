@@ -37,7 +37,7 @@ class FirebaseChatRepo implements ChatRepo{
 
 
   @override
-  Future<void> createChat(String uid1, String uid2) async {
+  Future<Chat?> createChat(String uid1, String uid2) async {
     try {
       // Generate a new document ID
       DocumentReference docRef = chatsCollection.doc();
@@ -55,9 +55,11 @@ class FirebaseChatRepo implements ChatRepo{
       });
 
       print("Chat created successfully with ID: ${docRef.id}");
+      return Chat(id: docRef.id, lastMessengerTime: Timestamp.now().toDate(), participate:  [uid1, uid2]);
+
     } catch (e) {
       print("Error creating chat: $e");
-      throw e;
+      return null;
     }
   }
 
