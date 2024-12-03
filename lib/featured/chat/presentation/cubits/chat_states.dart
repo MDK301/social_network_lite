@@ -8,8 +8,12 @@ class ChatInitial extends ChatStates {}
 
 class ChatLoading extends ChatStates {}
 
-class ChatLoaded extends ChatStates {
+class AllChatLoaded extends ChatStates {
   final List<Chat?> users;
+  AllChatLoaded(this.users);
+}
+class ChatLoaded extends ChatStates {
+  final Chat users;
   ChatLoaded(this.users);
 }
 

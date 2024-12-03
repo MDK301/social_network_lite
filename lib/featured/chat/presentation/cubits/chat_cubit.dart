@@ -20,7 +20,7 @@ class ChatCubit extends Cubit<ChatStates> {
     try {
       emit(ChatLoading());
       final chats = await chatRepo.fetchAllChats();
-      emit(ChatLoaded(chats));
+      emit(AllChatLoaded(chats));
     } catch (e) {
       emit(ChatError("Failed to fetch chats: $e"));
     }
@@ -37,13 +37,26 @@ class ChatCubit extends Cubit<ChatStates> {
     }
   }
 
-  Future<void> createChat(String uid1, String uid2 )async{
+  Future<String?> createChat(String uid1, String uid2 )async{
    try{
-     await chatRepo.createChat(uid1, uid2);
+     emit(ChatLoading());
+     final curChat= await chatRepo.createChat(uid1, uid2);
+
+     if (curChat != null) {
+       emit(ChatLoaded(curChat));
+       return null;
+
+     } else {
+       emit(ChatError("User not found"));
+       return null;
+
+     }
    }catch(e){
      emit(ChatError("Failed to create chats: $e"));
+     return null;
 
    }
+   return null;
   }
 
 

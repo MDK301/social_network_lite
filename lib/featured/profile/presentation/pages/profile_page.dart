@@ -119,8 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   IconButton(
                     onPressed: ()async {
                       final chatCubit = context.read<ChatCubit>();
-                      await chatCubit.createChat(currentUser!.uid,
-                          widget.uid); // Gọi createChat từ ChatCubit
+                      String chatid =await chatCubit.createChat(currentUser!.uid, widget.uid); // Gọi createChat từ ChatCubit
                       Navigator.push(
                         context,
                         MaterialPageRoute(
