@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/presentation/cubits/auth_cubit.dart';
+import 'package:social_network_lite/featured/chat/presentation/pages/all_chat_page.dart';
 import 'package:social_network_lite/featured/profile/presentation/pages/profile_page.dart';
 import 'package:social_network_lite/featured/search/presentation/pages/search_page.dart';
 import 'package:social_network_lite/featured/setting/pages/page.dart';
@@ -64,6 +65,31 @@ class MyDrawer extends StatelessWidget {
                   );
                 },
               ),
+
+              // messenger tile
+              MyDrawerTile(
+                title: "M E S S E N G E R",
+                icon: Icons.message,
+                onTap: () {
+                  //pop menu drawer
+                  Navigator.of(context).pop();
+
+                  //get current user uid
+                  final user = context.read<AuthCubit>().currentUser;
+                  String? uid = user!.uid;
+
+                  //nagivator to page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AllChatPage(
+                        uid: uid,
+                      ),
+                    ),
+                  );
+                },
+              ),
+
               // search tile
               MyDrawerTile(
                 title: "S E A R C H",

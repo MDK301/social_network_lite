@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart';
 import 'package:social_network_lite/featured/auth/presentation/cubits/auth_cubit.dart';
+import 'package:social_network_lite/featured/chat/presentation/pages/chat_page.dart';
 import 'package:social_network_lite/featured/post/presentation/cubits/post_cubit.dart';
 import 'package:social_network_lite/featured/post/presentation/cubits/post_states.dart';
 import 'package:social_network_lite/featured/profile/presentation/components/bio_box.dart';
@@ -111,6 +112,19 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                     icon: const Icon(Icons.settings),
+                  ),
+                // start chat button
+                if (!isOwnPost)
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatPage(user: user),
+                        ),
+                      );
+                    } ,
+                    icon: const Icon(Icons.chat),
                   )
               ],
             ),
@@ -181,6 +195,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       isFollowing: user.followers.contains(currentUser!.uid)),
 
                 const SizedBox(height: 25),
+
 
                 //bio box
                 Padding(

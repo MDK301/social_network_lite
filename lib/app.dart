@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/data/firebase_auth_repo.dart';
 import 'package:social_network_lite/featured/auth/presentation/cubits/auth_cubit.dart';
 import 'package:social_network_lite/featured/auth/presentation/pages/auth_page.dart';
+import 'package:social_network_lite/featured/chat/data/firebase_chat_repo.dart';
+import 'package:social_network_lite/featured/chat/presentation/cubits/chat_cubit.dart';
 import 'package:social_network_lite/featured/post/data/firebase_post_repo.dart';
 import 'package:social_network_lite/featured/post/presentation/cubits/post_cubit.dart';
 import 'package:social_network_lite/featured/profile/data/firebase_profile_repo.dart';
@@ -26,6 +28,9 @@ class MyApp extends StatelessWidget {
   final firebaseprofileRepo = FirebaseProfileRepo();
 
   //profile repo
+  final firebasechatRepo = FirebaseChatRepo();
+
+  //storage repo
   final firebasestorageRepo = FirebaseStorageRepo();
 
   //post repo
@@ -49,6 +54,11 @@ class MyApp extends StatelessWidget {
         //profile cubit
         BlocProvider<ProfileCubit>(
           create: (context) => ProfileCubit(profileRepo: firebaseprofileRepo,storageRepo: firebasestorageRepo),
+        ),
+
+        //chat cubit
+        BlocProvider<ChatCubit>(
+          create: (context) => ChatCubit(chatRepo: firebasechatRepo,storageRepo: firebasestorageRepo),
         ),
 
         //post cubit

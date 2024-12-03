@@ -16,8 +16,7 @@ class ProfileUser extends AppUser {
     required this.following,
   });
 
-  //method to opdate profile user
-
+  //method to update profile user
   ProfileUser copyWith({String? newBio,
     String? newprofileImageUrl,
     List<String>? newFollowers,
