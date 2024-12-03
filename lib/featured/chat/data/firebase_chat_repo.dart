@@ -3,12 +3,12 @@ import 'package:social_network_lite/featured/chat/domain/entities/chat.dart';
 import 'package:social_network_lite/featured/chat/domain/entities/messenger.dart';
 import 'package:social_network_lite/featured/chat/domain/repos/chat_repo.dart';
 
-class FirebaseChatRepo implements ChatRepo{
+class FirebaseChatRepo implements ChatRepo {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   // store the messenger in a collection called 'chats'
   final CollectionReference chatsCollection =
-  FirebaseFirestore.instance.collection('chats');
+      FirebaseFirestore.instance.collection('chats');
 
   @override
   Future<void> sendMessenger(String chatId, Messenger messenger) async {
@@ -21,9 +21,8 @@ class FirebaseChatRepo implements ChatRepo{
       }
 
       // Tạo tham chiếu đến collection `messenger`
-      CollectionReference chatCollection = chatsCollection
-          .doc(chatId)
-          .collection('messenger');
+      CollectionReference chatCollection =
+          chatsCollection.doc(chatId).collection('messenger');
 
       // Chuyển đổi Messenger sang JSON và thêm vào Firestore
       await chatCollection.add(messenger.toJson());
@@ -35,28 +34,52 @@ class FirebaseChatRepo implements ChatRepo{
     }
   }
 
-
   @override
   Future<Chat?> createChat(String uid1, String uid2) async {
     try {
-      // Generate a new document ID
-      DocumentReference docRef = chatsCollection.doc();
+      // Truy vấn tài liệu trong collection 'chats' nơi 'participate' chứa uid1
+      QuerySnapshot querySnapshot =
+          await chatsCollection.where('participate', arrayContains: uid1).get();
 
-      // Current timestamp
-      Timestamp currentTimestamp = Timestamp.now();
+      // Sử dụng biến để chứa kết quả lọc
+      QueryDocumentSnapshot? existingChat;
+      for (var doc in querySnapshot.docs) {
+        if (List.from(doc['participate']).contains(uid2)) {
+          existingChat = doc;
+          break;
+        }
+      }
+      if (existingChat != null) {
+        // Nếu đã tồn tại, trả về thông tin chat
+        print("Chat already exists with ID: ${existingChat.id}");
+        return Chat(
+          id: existingChat.id,
+          lastMessengerTime: (existingChat['lastmessengerTime'] as Timestamp).toDate(),
+          participate: List<String>.from(existingChat['participate']),
+        );
+      } else {
+        // Nếu không tồn tại, tạo tài liệu mới
+        // Generate a new document ID
+        DocumentReference docRef = chatsCollection.doc();
 
-      // Create the chat document
-      await docRef.set({
-        'id': docRef.id,
-        'lastMessenger': '',
-        'lastmessengerTime': currentTimestamp,
-        'participate': [uid1, uid2],
-        'unread': [uid1, uid2],
-      });
+        // Current timestamp
+        Timestamp currentTimestamp = Timestamp.now();
 
-      print("Chat created successfully with ID: ${docRef.id}");
-      return Chat(id: docRef.id, lastMessengerTime: Timestamp.now().toDate(), participate:  [uid1, uid2]);
+        // Create the chat document
+        await docRef.set({
+          'id': docRef.id,
+          'lastMessenger': '',
+          'lastmessengerTime': currentTimestamp,
+          'participate': [uid1, uid2],
+          'unread': [uid1, uid2],
+        });
 
+        print("Chat created successfully with ID: ${docRef.id}");
+        return Chat(
+            id: docRef.id,
+            lastMessengerTime: Timestamp.now().toDate(),
+            participate: [uid1, uid2]);
+      }
     } catch (e) {
       print("Error creating chat: $e");
       return null;
@@ -67,8 +90,9 @@ class FirebaseChatRepo implements ChatRepo{
   Future<List<Chat>> fetchAllChats() async {
     try {
       // get all posts with most recent posts at the top
-      final chatsSnapshot =
-      await chatsCollection.orderBy('lastMessengerTime', descending: true).get();
+      final chatsSnapshot = await chatsCollection
+          .orderBy('lastMessengerTime', descending: true)
+          .get();
 
       // convert each firestore document from json -> list of posts
       final List<Chat> allChats = chatsSnapshot.docs
@@ -82,11 +106,12 @@ class FirebaseChatRepo implements ChatRepo{
   }
 
   @override
-  Future<List<Chat>> fetchChatsByUserId(String userId)async {
+  Future<List<Chat>> fetchChatsByUserId(String userId) async {
     try {
       // get all posts with most recent posts at the top
-      final chatsSnapshot =
-          await chatsCollection .where('participate', arrayContains: userId).get();
+      final chatsSnapshot = await chatsCollection
+          .where('participate', arrayContains: userId)
+          .get();
 
       // convert each firestore document from json -> list of posts
       final List<Chat> allChats = chatsSnapshot.docs
@@ -106,11 +131,7 @@ class FirebaseChatRepo implements ChatRepo{
   }
 
   @override
-  Future<void> deleteChat(String chatId)async {
+  Future<void> deleteChat(String chatId) async {
     await chatsCollection.doc(chatId).delete();
-
   }
-  
-
-
 }

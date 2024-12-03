@@ -13,6 +13,7 @@ import 'package:social_network_lite/featured/profile/presentation/pages/edit_pro
 import 'package:social_network_lite/featured/profile/presentation/pages/follower_page.dart';
 import 'package:social_network_lite/responsive/constrainEdgeInsets_scaffold.dart';
 
+import '../../../chat/domain/entities/chat.dart';
 import '../../../post/presentation/component/post_tile.dart';
 import '../components/profile_stats.dart';
 import '../cubits/profile_cubit.dart';
@@ -119,7 +120,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   IconButton(
                     onPressed: ()async {
                       final chatCubit = context.read<ChatCubit>();
-                      String chatid =await chatCubit.createChat(currentUser!.uid, widget.uid); // Gọi createChat từ ChatCubit
+                      Chat? newChat =await chatCubit.createChat(currentUser!.uid, widget.uid); // Gọi createChat từ ChatCubit
+                      String chatId=newChat!.id;
+                      chatId.isEmpty ?print("CHAT ID BI RONG "):
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -127,7 +130,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             myId: currentUser!.uid,
                             friendId: user.uid,
                             friendName: user.name,
-                            chatDocId: ChatCubit ,
+                            chatDocId: chatId ,
                           ),
                         ),
                       );

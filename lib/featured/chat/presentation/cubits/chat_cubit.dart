@@ -37,14 +37,14 @@ class ChatCubit extends Cubit<ChatStates> {
     }
   }
 
-  Future<String?> createChat(String uid1, String uid2 )async{
+  Future<Chat?> createChat(String uid1, String uid2 )async{
    try{
      emit(ChatLoading());
      final curChat= await chatRepo.createChat(uid1, uid2);
 
      if (curChat != null) {
        emit(ChatLoaded(curChat));
-       return null;
+       return curChat;
 
      } else {
        emit(ChatError("User not found"));
