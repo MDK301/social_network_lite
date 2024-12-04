@@ -6,7 +6,7 @@ import 'package:social_network_lite/featured/chat/presentation/cubits/chat_state
 import '../../../storage/domain/storage_repo.dart';
 import '../../domain/entities/chat.dart';
 
-class ChatCubit extends Cubit<ChatStates> {
+class ChatCubit extends Cubit<ChatStates?> {
   final ChatRepo chatRepo;
   final StorageRepo storageRepo;
 
@@ -31,7 +31,7 @@ class ChatCubit extends Cubit<ChatStates> {
   Future<void> deleteChat(String chatId) async {
     try {
       await chatRepo.deleteChat(chatId);
-      await fetchAllMessengers();
+      await fetchAllMessengers(chatId);
     } catch (e) {
       emit(ChatError("Failed to delete chat: $e"));
     }

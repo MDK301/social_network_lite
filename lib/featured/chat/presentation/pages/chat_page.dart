@@ -40,13 +40,32 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    final fakeMessenger = Messenger(
-        id: "123",
-        senderId: "senderId",
-        createOn: Timestamp.now().toDate(),
-        msg: "vl",
-        msgDocumentUrl: "docvl",
-        msgImageUrl: "imgvl");
+    final List<Messenger> _messages = [
+      Messenger(
+        id: "1",
+        senderId: "sender1",
+        createOn: DateTime.now(),
+        msg: "Hello, how are you?",
+        msgDocumentUrl: "docUrl1",
+        msgImageUrl: "imgUrl1",
+      ),
+      Messenger(
+        id: "2",
+        senderId: "sender2",
+        createOn: DateTime.now(),
+        msg: "I'm good, thanks!",
+        msgDocumentUrl: "docUrl2",
+        msgImageUrl: "imgUrl2",
+      ),
+      Messenger(
+        id: "3",
+        senderId: "sender1",
+        createOn: DateTime.now(),
+        msg: "Great to hear!",
+        msgDocumentUrl: "docUrl3",
+        msgImageUrl: "imgUrl3",
+      ),
+    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -57,10 +76,13 @@ class _ChatPageState extends State<ChatPage> {
           //hiển thị tin nhắn
           Expanded(
               child: ListView.builder(
-                itemCount: 3,
+                itemCount: _messages.length ,
                 itemBuilder: (context, index) {
+                  // Lấy một tin nhắn từ danh sách
+                  final messenger = _messages[index];
+                  final String m =messenger.msg as String;
                   return ListTile(
-                    title: Text(_messages[index]),
+                    title: Text(m),
                   );
                 },
               )),

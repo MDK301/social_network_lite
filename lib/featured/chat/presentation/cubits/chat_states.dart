@@ -9,7 +9,7 @@ class ChatInitial extends ChatStates {}
 class ChatLoading extends ChatStates {}
 
 class AllChatLoaded extends ChatStates {
-  final List<Chat?> users;
+  final List<Chat> users;
   AllChatLoaded(this.users);
 }
 class ChatLoaded extends ChatStates {
@@ -22,20 +22,19 @@ class ChatError extends ChatStates {
   ChatError(this.errormessage);
 }
 
-abstract class MessengerStates {}
 
-class MessengerInitial extends MessengerStates {}
+class MessengerInitial extends ChatStates {}
 
-class MessengerLoading extends MessengerStates {}
+class MessengerLoading extends ChatStates {}
 
-class MessengerUpLoading extends MessengerStates {}
+class MessengerUpLoading extends ChatStates {}
 
 class MessengerLoaded extends ChatStates {
-  final List<Messenger?> messenger;
+  final List<Messenger> messenger;
   MessengerLoaded(this.messenger);
 }
 
-class MessengerError extends MessengerStates {
+class MessengerError extends ChatStates {
   final String errorMessage;
   MessengerError(this.errorMessage);
 }
