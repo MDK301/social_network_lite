@@ -8,7 +8,8 @@ class MessengerBubble extends StatelessWidget {
 
   const MessengerBubble({
     Key? key,
-    required this.isMe,required this.messenger,
+    required this.isMe,
+    required this.messenger,
   }) : super(key: key);
 
   @override
@@ -24,16 +25,29 @@ class MessengerBubble extends StatelessWidget {
               : Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-          Text(
-            message,
-            style: TextStyle(
-              color: isMe ? Colors.white : Colors.black,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(timestamp.toString()),
-        ]),
+        child: Column(
+            crossAxisAlignment:
+                isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: [
+              //check msg null
+              messenger.msg != null
+                  ? Text(
+                      messenger.msg!,
+                      style: TextStyle(
+                        color: isMe
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                    )
+                  : const SizedBox(height: 4),
+              Text(
+                messenger.createOn.toString(),
+                style: TextStyle(
+                    color: isMe
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.inversePrimary),
+              ),
+            ]),
       ),
     );
   }
