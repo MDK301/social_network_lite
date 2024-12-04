@@ -6,7 +6,7 @@ import 'package:social_network_lite/featured/chat/presentation/cubits/chat_state
 import '../../../storage/domain/storage_repo.dart';
 import '../../domain/entities/chat.dart';
 
-class ChatCubit extends Cubit<ChatStates?> {
+class ChatCubit extends Cubit<ChatStates> {
   final ChatRepo chatRepo;
   final StorageRepo storageRepo;
 

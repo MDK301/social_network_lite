@@ -2,15 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:social_network_lite/featured/profile/domain/entities/profile_user.dart';
 import 'package:social_network_lite/featured/profile/presentation/pages/profile_page.dart';
 
-class UserTile extends StatelessWidget {
-  final ProfileUser user;
+import '../../domain/entities/chat.dart';
 
-  const UserTile({super.key, required this.user});
+class ChatTile extends StatelessWidget {
+  final Chat chat;
+  final curUid;
+
+  const ChatTile({super.key
+    , required this.chat
+    , required this.curUid
+  });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(user.name),
+      title: Text(chat.name),
       subtitle: Text(user.email),
       subtitleTextStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
       leading: Icon(

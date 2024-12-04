@@ -9,12 +9,12 @@ class ChatInitial extends ChatStates {}
 class ChatLoading extends ChatStates {}
 
 class AllChatLoaded extends ChatStates {
-  final List<Chat> users;
-  AllChatLoaded(this.users);
+  final List<Chat> chats;
+  AllChatLoaded(this.chats);
 }
 class ChatLoaded extends ChatStates {
-  final Chat users;
-  ChatLoaded(this.users);
+  final Chat chat;
+  ChatLoaded(this.chat);
 }
 
 class ChatError extends ChatStates {

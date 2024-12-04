@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_network_lite/featured/chat/presentation/component/chat_tile.dart';
+import 'package:social_network_lite/featured/chat/presentation/cubits/chat_cubit.dart';
+import 'package:social_network_lite/featured/chat/presentation/cubits/chat_states.dart';
 
 class AllChatPage extends StatefulWidget {
   final String uid;
@@ -14,12 +18,34 @@ class _AllChatPageState extends State<AllChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Padding(padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          Expanded(child: ListView())
-        ],
-      ),),
+      body: BlocBuilder<ChatCubit, ChatStates>(
+          builder: (context, state) {
+            //loading
+            if (state is ChatLoading) {
+              return const Center(child: CircularProgressIndicator(),);
+            }
+
+            //loaded
+            else if (state is AllChatLoaded) {
+              final allChats = state.chats;
+
+              if (allChats.isEmpty) {
+                return const Center(child: Text("Start your chat now!  =w=  "),
+                );
+              }
+              return ListView.builder(
+                itemCount:allChats.length,
+                itemBuilder: (context, index) {
+                  //get indivitual chat UwU~
+                  final chat = allChats[index];
+
+                  // image
+                  return ChatTile(chat: chat)
+                },
+              );
+            }
+          }
+      ),
     );
   }
 }
