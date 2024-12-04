@@ -30,7 +30,7 @@ class MessengerLoading extends MessengerStates {}
 
 class MessengerUpLoading extends MessengerStates {}
 
-class MessengerLoaded extends MessengerStates {
+class MessengerLoaded extends ChatStates {
   final List<Messenger?> messenger;
   MessengerLoaded(this.messenger);
 }

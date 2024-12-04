@@ -99,11 +99,11 @@ class FirebaseChatRepo implements ChatRepo {
           .get();
 
       // convert each firestore document from json -> list of posts
-      final List<Chat> allChats = chatsSnapshot.docs
-          .map((doc) => Chat.fromJson(doc.data() as Map<String, dynamic>))
+      final List<Messenger> allMessengers = chatsSnapshot.docs
+          .map((doc) => Messenger.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
 
-      return allChats;
+      return allMessengers;
     } catch (e) {
       throw Exception("Error fetching posts: $e");
     }

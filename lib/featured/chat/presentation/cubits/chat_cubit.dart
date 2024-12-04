@@ -18,11 +18,11 @@ class ChatCubit extends Cubit<ChatStates> {
   // fetch all chats
   Future<void> fetchAllMessengers(String chatId) async {
     try {
-      emit(ChatLoading());
-      final chats = await chatRepo.fetchAllMessengers(chatId);
-      emit(MessengerLoaded(chats));
+      emit(MessengerLoading());
+      final messengers = await chatRepo.fetchAllMessengers(chatId);
+      emit(MessengerLoaded(messengers));
     } catch (e) {
-      emit(ChatError("Failed to fetch chats: $e"));
+      emit(MessengerError("Failed to fetch chats: $e"));
     }
   }
 
