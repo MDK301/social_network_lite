@@ -16,11 +16,11 @@ class ChatCubit extends Cubit<ChatStates> {
   }) : super(ChatInitial());
 
   // fetch all chats
-  Future<void> fetchAllChats() async {
+  Future<void> fetchAllMessengers(String chatId) async {
     try {
       emit(ChatLoading());
-      final chats = await chatRepo.fetchAllChats();
-      emit(AllChatLoaded(chats));
+      final chats = await chatRepo.fetchAllMessengers(chatId);
+      emit(MessengerLoaded(chats));
     } catch (e) {
       emit(ChatError("Failed to fetch chats: $e"));
     }
@@ -31,7 +31,7 @@ class ChatCubit extends Cubit<ChatStates> {
   Future<void> deleteChat(String chatId) async {
     try {
       await chatRepo.deleteChat(chatId);
-      await fetchAllChats();
+      await fetchAllMessengers();
     } catch (e) {
       emit(ChatError("Failed to delete chat: $e"));
     }

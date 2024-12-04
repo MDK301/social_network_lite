@@ -25,8 +25,12 @@ class FirebaseChatRepo implements ChatRepo {
           chatsCollection.doc(chatId).collection('messenger');
 
       // Chuyển đổi Messenger sang JSON và thêm vào Firestore
-      await chatCollection.add(messenger.toJson());
+      final docRef = await chatCollection.add(messenger.toJson());
 
+      // Cập nhật messenger với ID của document vừa tạo
+      await docRef.update({
+        'id': docRef.id, // Gán ID vừa tạo vào trường 'id'
+      });
       print('Messenger added successfully!');
     } catch (e) {
       print('Error adding messenger: $e');
@@ -87,11 +91,11 @@ class FirebaseChatRepo implements ChatRepo {
   }
 
   @override
-  Future<List<Chat>> fetchAllChats() async {
+  Future<List<Messenger>> fetchAllMessengers(String chatId) async {
     try {
       // get all posts with most recent posts at the top
       final chatsSnapshot = await chatsCollection
-          .orderBy('lastMessengerTime', descending: true)
+          .orderBy('createOn', descending: true)
           .get();
 
       // convert each firestore document from json -> list of posts

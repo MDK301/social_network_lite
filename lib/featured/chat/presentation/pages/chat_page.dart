@@ -52,28 +52,26 @@ class _ChatPageState extends State<ChatPage> {
       appBar: AppBar(
         title: Text(widget.friendName),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            //hiển thị tin nhắn
-            Expanded(
-                child: Column(
-                  children: [
-                    MessengerBubble(messenger: fakeMessenger, isMe: true),
-                    MessengerBubble(messenger: fakeMessenger, isMe: false),
-                    MessengerBubble(messenger: fakeMessenger, isMe: true),
-                  ],
-                )),
-            //nơi nhập tin nhắn va nut gửi
-            TextField(
-              decoration: InputDecoration(
-                hintText: "Search users..",
-                hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-              ),
+      body: Column(
+        children: [
+          //hiển thị tin nhắn
+          Expanded(
+              child: ListView.builder(
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_messages[index]),
+                  );
+                },
+              )),
+          //nơi nhập tin nhắn va nut gửi
+          TextField(
+            decoration: InputDecoration(
+              hintText: "Search users..",
+              hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
