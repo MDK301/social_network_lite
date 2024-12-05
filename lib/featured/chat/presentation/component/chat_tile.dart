@@ -11,7 +11,7 @@ import '../../domain/entities/chat.dart';
 class ChatTile extends StatefulWidget {
   //lụm nội dung model chat và id nguoi dung hien tai
   final Chat chat;
-  final curUid;
+  final String curUid;
 
   const ChatTile({super.key
     , required this.chat
@@ -26,22 +26,14 @@ class _ChatTileState extends State<ChatTile> {
 
   late final profileCubit = context.read<ProfileCubit>();
 
-  //other uid
-  Future<List<ProfileUser>> getUserProfiles() async {
-    final otherUids = widget.chat.participate.where((uid) => uid != widget.curUid).toList();
-    final userProfiles = <ProfileUser>[];
-
-    for (final uid in otherUids) {
-      final userProfile = await firebaseProfileRepo.fetchUserProfile(uid);
-      userProfiles.add(userProfile);
-    }
-
-    return userProfiles;
-  }
+  //tao ra mot ham de chay 2 cau lenh phia duoi,
+  final otherUids = widget.chat.participate.where((uid) => uid != widget.curUid).toList();
+  final otherUid = otherUids.first;
 
   @override
   void initState() {
-    // TODO: implement initState
+    profileCubit.fetchUserProfile(widget.chat.participate[1]);
+
     super.initState();
   }
   @override
@@ -54,9 +46,28 @@ class _ChatTileState extends State<ChatTile> {
 
         //state ok
       if (state is ProfileLoaded) {
+
+        //tao bien title
+        String title="unknow";
+
+
+        final otherUids = widget.chat.participate.where((uid) => uid != widget.curUid).toList();
+        final numOfParticipants = otherUids.length + 1;
+
         //get loaded user
         final user = state.profileUser;
-
+        if (numOfParticipants == 2) {
+          final otherUid = otherUids.first;
+          // Access user profile from map
+          final userProfile = state.profileUser; // Access user profile from map
+          // Display name of other user
+          title = userProfile.name ?? 'Unknown'; // Display name of other user
+        } else {
+          final otherUid = otherUids.first;
+          final userProfile = state.profileUser; // Access user profile from map
+          final remainingCount = otherUids.length - 1;
+          title = '${userProfile.name ?? 'Unknown'} và $remainingCount người khác';
+        }
 
 
         return ListTile(
