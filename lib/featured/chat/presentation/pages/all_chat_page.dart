@@ -77,7 +77,7 @@ class _AllChatPageState extends State<AllChatPage> {
 
                       // image
                       return ChatTile(
-                        chat: chat,
+                        chat: allChats[index],
                         curUid: currentUser!.uid,
                       );
                     },

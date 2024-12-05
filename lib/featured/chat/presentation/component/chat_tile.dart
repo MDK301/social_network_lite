@@ -60,6 +60,7 @@ class _ChatTileState extends State<ChatTile> {
 
   @override
   Widget build(BuildContext context) {
+    String late=getOtherUid(widget.chat,widget.curUid);
 
 
 
