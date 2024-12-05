@@ -74,7 +74,8 @@ class _ChatPageState extends State<ChatPage> {
       body: Column(
         children: [
           //hiển thị tin nhắn
-          Expanded(
+          Container(
+            height: 200,
               child: ListView.builder(
                 itemCount: _messages.length ,
                 itemBuilder: (context, index) {

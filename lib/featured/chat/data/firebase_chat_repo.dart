@@ -93,6 +93,8 @@ class FirebaseChatRepo implements ChatRepo {
   @override
   Future<List<Messenger>> fetchAllMessengers(String chatId) async {
     try {
+      print("fetchAllMessengers-firebase");
+      print("intry");
       // get all posts with most recent posts at the top
       final chatsSnapshot = await chatsCollection
           .orderBy('createOn', descending: true)
@@ -102,9 +104,13 @@ class FirebaseChatRepo implements ChatRepo {
       final List<Messenger> allMessengers = chatsSnapshot.docs
           .map((doc) => Messenger.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
-
+      print("fetchAllMessengers-firebase-allMessengers lay dc");
+      print(allMessengers);
       return allMessengers;
+
     } catch (e) {
+      print("fetchAllMessengers-firebase");
+      print("incatch");
       throw Exception("Error fetching posts: $e");
     }
   }
@@ -112,18 +118,23 @@ class FirebaseChatRepo implements ChatRepo {
   @override
   Future<List<Chat>> fetchChatsByUserId(String userId) async {
     try {
+      print("fetchChatsByUserId-firebase");
+      print("intry");
       // get all posts with most recent posts at the top
       final chatsSnapshot = await chatsCollection
           .where('participate', arrayContains: userId)
           .get();
-
+      print("fetchChatsByUserId-firebase");
+      print("chatsSnapshot.get");
       // convert each firestore document from json -> list of posts
       final List<Chat> allChats = chatsSnapshot.docs
           .map((doc) => Chat.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
-
+      print("fetchChatsByUserId-firebase-allChats");
+      print(allChats);
       return allChats;
     } catch (e) {
+      print("fetchChatsByUserId-firebase-in catch");
       throw Exception("Error fetching posts: $e");
     }
   }

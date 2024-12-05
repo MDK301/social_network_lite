@@ -90,7 +90,6 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     //is own post
     bool isOwnPost = (widget.uid == currentUser!.uid);
-
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         // loaded

@@ -15,14 +15,36 @@ class ChatCubit extends Cubit<ChatStates> {
     required this.storageRepo,
   }) : super(ChatInitial());
 
-  // fetch all chats
+  // fetch all messengers
   Future<void> fetchAllMessengers(String chatId) async {
     try {
+      print("fetchAllMessengers");
+      print("intry");
       emit(MessengerLoading());
       final messengers = await chatRepo.fetchAllMessengers(chatId);
+      print("fetchAllMessengers");
+      print("intry-qua final");
       emit(MessengerLoaded(messengers));
     } catch (e) {
       emit(MessengerError("Failed to fetch chats: $e"));
+      print("fetchAllMessengers");
+      print("incatch");
+    }
+  }
+  // fetch all chats
+  Future<void> fetchChatsByUserId(String userId) async {
+    try {
+      print("fetchChatsByUserId-cubit");
+      print("intry");
+      emit(ChatLoading());
+      final messengers = await chatRepo.fetchChatsByUserId(userId);
+      print("fetchChatsByUserId-cubit");
+      print("intry-qua final");
+      emit(AllChatLoaded(messengers));
+    } catch (e) {
+      emit(ChatError("Failed to fetch chats: $e"));
+      print("fetchChatsByUserId-cubit");
+      print("incatch cubit");
     }
   }
 
