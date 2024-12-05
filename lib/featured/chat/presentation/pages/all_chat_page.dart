@@ -54,6 +54,10 @@ class _AllChatPageState extends State<AllChatPage> {
               );
             },
           );
+        } else {
+          return const Center(
+            child: Text("No profile found.."),
+          );
         }
       }),
     );

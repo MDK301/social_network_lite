@@ -19,24 +19,37 @@ class ChatTile extends StatefulWidget {
 }
 
 class _ChatTileState extends State<ChatTile> {
-  @override
-  Widget build(BuildContext context) {
+  //ten nguoi tham gia, so luong
+  String title = '';
+  //other uid
 
-    //other uid
+
+
+
+  Future<String> _getTitle(BuildContext context) async {
     final otherUids = widget.chat.participate.where((uid) => uid != widget.curUid).toList();
     final numOfParticipante=otherUids.length+1;
-
-
-
-    Future<String> _getTitle() async {
+    if (numOfParticipante == 2) {
+      final otherUid = otherUids.first;
+      final userProfile = await firebaseProfileRepo.fetchUserProfile(otherUid);
+      return userProfile.name;
+    } else {
       final otherUids = widget.chat.participate.where((uid) => uid != widget.curUid).toList();
-      final names = <String>[];
-      for (final uid in otherUids) {
-        final userProfile = await firebaseProfileRepo.fetchUserProfile(uid);
-        names.add(userProfile.name);
-      }
-      return names.join(', '); // Ghép các tên bằng dấu phẩy
+      final firstOtherUid = otherUids.first;
+      final userProfile = await firebaseProfileRepo.fetchUserProfile(firstOtherUid);
+      final remainingCount = otherUids.length - 1; // Trừ đi người đầu tiên
+      return '${userProfile.name} cùng với $remainingCount người khác';
     }
+  }
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
 
 
 
