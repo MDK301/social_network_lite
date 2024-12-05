@@ -22,6 +22,9 @@ class _AllChatPageState extends State<AllChatPage> {
 
   @override
   Widget build(BuildContext context) {
+
+
+
     return Scaffold(
       appBar: AppBar(),
       body: BlocBuilder<ChatCubit, ChatStates>(builder: (context, state) {
