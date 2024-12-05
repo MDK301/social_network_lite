@@ -57,6 +57,9 @@ class _AllChatPageState extends State<AllChatPage> {
               else if (state is AllChatLoaded)
               {
                 final allChats = state.chats;
+                //kiem tra id chat lay ve
+                print(allChats[0].id);
+                print(allChats[1].id);
 
                 if (allChats.isEmpty) {
                   return const Center(
@@ -70,6 +73,7 @@ class _AllChatPageState extends State<AllChatPage> {
                     itemBuilder: (context, index) {
                       //get indivitual chat UwU~
                       final chat = allChats[index];
+                      // print(allChats[index].id);
 
                       // image
                       return ChatTile(
