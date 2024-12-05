@@ -42,48 +42,54 @@ class _AllChatPageState extends State<AllChatPage> {
 
     return Scaffold(
       appBar: AppBar(),
-      body: BlocBuilder<ChatCubit, ChatStates>(builder: (context, state) {
-        //loading
-        if (state is ChatLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        //loaded
-        else if (state is AllChatLoaded)
-        {
-          final allChats = state.chats;
-
-          if (allChats.isEmpty) {
-            return const Center(
-              child: Text("Start your chat now!  =w= ~ "),
-            );
-          }
-          return Container(
-            height: 200,
-            child: ListView.builder(
-              itemCount: allChats.length,
-              itemBuilder: (context, index) {
-                //get indivitual chat UwU~
-                final chat = allChats[index];
-
-                // image
-                return ChatTile(
-                  chat: chat,
-                  curUid: currentUser!.uid,
+      body: Column(
+        children: [
+          Expanded(
+            child: BlocBuilder<ChatCubit, ChatStates>(builder: (context, state) {
+              //loading
+              if (state is ChatLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
-              },
-            ),
-          );
-        }
-        else
-        {
-          return const Center(
-            child: Text("No chat found.."),
-          );
-        }
-      }),
+              }
+
+              //loaded
+              else if (state is AllChatLoaded)
+              {
+                final allChats = state.chats;
+
+                if (allChats.isEmpty) {
+                  return const Center(
+                    child: Text("Start your chat now!  =w= ~ "),
+                  );
+                }
+                return SizedBox(
+                  height: 200,
+                  child: ListView.builder(
+                    itemCount: allChats.length,
+                    itemBuilder: (context, index) {
+                      //get indivitual chat UwU~
+                      final chat = allChats[index];
+
+                      // image
+                      return ChatTile(
+                        chat: chat,
+                        curUid: currentUser!.uid,
+                      );
+                    },
+                  ),
+                );
+              }
+              else
+              {
+                return const Center(
+                  child: Text("No chat found.."),
+                );
+              }
+            }),
+          ),
+        ],
+      ),
     );
   }
 }

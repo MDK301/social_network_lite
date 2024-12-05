@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_network_lite/featured/chat/presentation/pages/chat_page.dart';
 import 'package:social_network_lite/featured/profile/domain/entities/profile_user.dart';
 import 'package:social_network_lite/featured/profile/presentation/cubits/profile_cubit.dart';
 import 'package:social_network_lite/featured/profile/presentation/pages/profile_page.dart';
@@ -55,6 +56,7 @@ class _ChatTileState extends State<ChatTile> {
 
         //tao bien title
         String title="unknow";
+        String myId=widget.curUid;
 
 
         final otherUids = widget.chat.participate.where((uid) => uid != widget.curUid).toList();
@@ -77,7 +79,7 @@ class _ChatTileState extends State<ChatTile> {
 
 
         return ListTile(
-          title: Text(widget.chat.participate[0]),
+          title: Text(user.name),
           subtitle: Text(user.email),
           subtitleTextStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
           leading: Icon(
@@ -91,7 +93,7 @@ class _ChatTileState extends State<ChatTile> {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProfilePage(uid: user.uid),
+              builder: (context) => ChatPage(myId:widget.curUid , friendId: user.uid, friendName: user.name, chatDocId: widget.chat.id,),
             ),
           ),
         );
