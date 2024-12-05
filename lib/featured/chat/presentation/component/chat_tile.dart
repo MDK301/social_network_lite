@@ -26,9 +26,10 @@ class _ChatTileState extends State<ChatTile> {
 
   late final profileCubit = context.read<ProfileCubit>();
 
-  //tao ra mot ham de chay 2 cau lenh phia duoi,
-  final otherUids = widget.chat.participate.where((uid) => uid != widget.curUid).toList();
-  final otherUid = otherUids.first;
+  // toi muon dat tai day
+
+
+
 
   @override
   void initState() {
