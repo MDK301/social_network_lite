@@ -36,7 +36,8 @@ class _AllChatPageState extends State<AllChatPage> {
         }
 
         //loaded
-        else if (state is AllChatLoaded) {
+        else if (state is AllChatLoaded)
+        {
           final allChats = state.chats;
 
           if (allChats.isEmpty) {
@@ -57,9 +58,11 @@ class _AllChatPageState extends State<AllChatPage> {
               );
             },
           );
-        } else {
+        }
+        else
+        {
           return const Center(
-            child: Text("No profile found.."),
+            child: Text("No chat found.."),
           );
         }
       }),

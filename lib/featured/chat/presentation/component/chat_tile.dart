@@ -29,11 +29,16 @@ class _ChatTileState extends State<ChatTile> {
   // toi muon dat tai day
 
 
-
+  String getOtherUid(Chat chat, String curUid) {
+    return chat.participate.firstWhere(
+          (uid) => uid != curUid
+    );
+  }
 
   @override
   void initState() {
-    profileCubit.fetchUserProfile(widget.chat.participate[1]);
+    String otherId= getOtherUid(widget.chat,widget.curUid);
+    profileCubit.fetchUserProfile(otherId);
 
     super.initState();
   }
