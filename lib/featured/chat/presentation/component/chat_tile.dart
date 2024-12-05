@@ -32,6 +32,8 @@ class _ChatTileState extends State<ChatTile> {
 
 
   String getOtherUid(Chat chat, String curUid) {
+    print("get other uidchat.id");
+    print(chat.id);
     return chat.participate.firstWhere(
           (uid) => uid != curUid
     );
@@ -39,6 +41,8 @@ class _ChatTileState extends State<ChatTile> {
 
   @override
   void initState() {
+    String late=getOtherUid(widget.chat,widget.curUid);
+    print(late);
     String otherId= getOtherUid(widget.chat,widget.curUid);
     profileCubit.fetchUserProfile(otherId);
 
@@ -65,21 +69,22 @@ class _ChatTileState extends State<ChatTile> {
           final otherUids = widget.chat.participate.where((uid) => uid != widget.curUid).toList();
           final numOfParticipants = otherUids.length + 1;
 
-          //get loaded user
-          final user = state.profileUser;
+          // //get loaded user
+          ProfileUser user = state.profileUser;
           if (numOfParticipants == 2) {
-            final otherUid = otherUids.first;
+            String otherUid = otherUids.first;
             // Access user profile from map
             final userProfile = state.profileUser; // Access user profile from map
             // Display name of other user
-            title = userProfile.name ?? 'Unknown'; // Display name of other user
+            title = userProfile.name; // Display name of other user
           } else {
             final otherUid = otherUids.first;
             final userProfile = state.profileUser; // Access user profile from map
             final remainingCount = otherUids.length - 1;
-            title = '${userProfile.name ?? 'Unknown'} và $remainingCount người khác';
+            title = '${userProfile.name} và $remainingCount người khác';
           }
             print(widget.chat.id);
+            print(user.name);
 
           return ListTile(
 
