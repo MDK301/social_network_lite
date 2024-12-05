@@ -118,23 +118,20 @@ class FirebaseChatRepo implements ChatRepo {
   @override
   Future<List<Chat>> fetchChatsByUserId(String userId) async {
     try {
-      print("fetchChatsByUserId-firebase");
-      print("intry");
+      print("============================================");
       // get all posts with most recent posts at the top
       final chatsSnapshot = await chatsCollection
           .where('participate', arrayContains: userId)
           .get();
-      print("fetchChatsByUserId-firebase");
-      print("chatsSnapshot.get");
+
       // convert each firestore document from json -> list of posts
       final List<Chat> allChats = chatsSnapshot.docs
           .map((doc) => Chat.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
-      print("fetchChatsByUserId-firebase-allChats");
-      print(allChats);
+
       return allChats;
     } catch (e) {
-      print("fetchChatsByUserId-firebase-in catch");
+
       throw Exception("Error fetching posts: $e");
     }
   }
