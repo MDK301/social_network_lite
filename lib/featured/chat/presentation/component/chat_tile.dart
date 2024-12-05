@@ -4,7 +4,8 @@ import 'package:social_network_lite/featured/profile/presentation/pages/profile_
 
 import '../../domain/entities/chat.dart';
 
-class ChatTile extends StatelessWidget {
+class ChatTile extends StatefulWidget {
+  //lụm nội dung model chat và id nguoi dung hien tai
   final Chat chat;
   final curUid;
 
@@ -14,10 +15,34 @@ class ChatTile extends StatelessWidget {
   });
 
   @override
+  State<ChatTile> createState() => _ChatTileState();
+}
+
+class _ChatTileState extends State<ChatTile> {
+  @override
   Widget build(BuildContext context) {
+
+    //other uid
+    final otherUids = widget.chat.participate.where((uid) => uid != widget.curUid).toList();
+    final numOfParticipante=otherUids.length+1;
+
+
+
+    Future<String> _getTitle() async {
+      final otherUids = widget.chat.participate.where((uid) => uid != widget.curUid).toList();
+      final names = <String>[];
+      for (final uid in otherUids) {
+        final userProfile = await firebaseProfileRepo.fetchUserProfile(uid);
+        names.add(userProfile.name);
+      }
+      return names.join(', '); // Ghép các tên bằng dấu phẩy
+    }
+
+
+
     return ListTile(
-      title: Text(chat.name),
-      subtitle: Text(user.email),
+      title: Text(widget.chat.participate[0]),
+      subtitle: Text(widget.user.email),
       subtitleTextStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
       leading: Icon(
         Icons.person,
