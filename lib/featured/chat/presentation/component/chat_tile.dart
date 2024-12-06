@@ -16,27 +16,26 @@ class ChatTile extends StatefulWidget {
   final Chat chat;
   final String curUid;
 
-  const ChatTile({super.key
-    , required this.chat
-    , required this.curUid
-  });
+  const ChatTile({super.key, required this.chat, required this.curUid});
 
   @override
   State<ChatTile> createState() => _ChatTileState();
 }
 
 class _ChatTileState extends State<ChatTile> {
-
+  ProfileUser? _profileuser;
 
   // toi muon dat tai day
   Map<String, dynamic>? _userInfo; // Biến để lưu trữ thông tin người dùng
 
   Future<void> _fetchUserInfo(String uid) async {
     try {
-      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      DocumentSnapshot userSnapshot =
+          await FirebaseFirestore.instance.collection('users').doc(uid).get();
       if (userSnapshot.exists) {
         setState(() {
-          _userInfo = userSnapshot.data() as Map<String, dynamic>;
+          _profileuser =
+              ProfileUser.fromJson(userSnapshot );
         });
       } else {
         // Xử lý trường hợp tài liệu ngườidùng không tồn tại
@@ -48,11 +47,8 @@ class _ChatTileState extends State<ChatTile> {
     }
   }
 
-
   String getOtherUid(Chat chat, String curUid) {
-    return chat.participate.firstWhere(
-          (uid) => uid != curUid
-    );
+    return chat.participate.firstWhere((uid) => uid != curUid);
   }
 
   @override
@@ -64,42 +60,39 @@ class _ChatTileState extends State<ChatTile> {
 
     super.initState();
   }
-@override
-  void didChangeDependencies() {
-  // String late=getOtherUid(widget.chat,widget.curUid);
 
-  // String otherId= getOtherUid(widget.chat,widget.curUid);
-  // profileCubit.fetchUserProfile(otherId);
+  @override
+  void didChangeDependencies() {
+    // String late=getOtherUid(widget.chat,widget.curUid);
+
+    // String otherId= getOtherUid(widget.chat,widget.curUid);
+    // profileCubit.fetchUserProfile(otherId);
 
     super.didChangeDependencies();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    String otherUid = getOtherUid(widget.chat, widget.curUid);
+
+
+
     late final profileCubit = context.read<ProfileCubit>();
 
-    String otherUId= getOtherUid(widget.chat,widget.curUid);
-    profileCubit.getUserProfile(otherUId);
 
-
-
-
-
+    profileCubit.getUserProfile(otherUid);
+    _fetchUserInfo(otherUid);
     return SizedBox(
       height: 50,
-      child: BlocBuilder<ProfileCubit, ProfileState>(
-        builder: (context, state) {
-
-          //state ok
+      child: BlocBuilder<ProfileCubit, ProfileState>(builder: (context, state) {
+        //state ok
         if (state is ProfileLoaded) {
-
           //tao bien title
-          String title="unknow";
+          String title = "unknow";
 
-
-
-          final otherUids = widget.chat.participate.where((uid) => uid != widget.curUid).toList();
+          final otherUids = widget.chat.participate
+              .where((uid) => uid != widget.curUid)
+              .toList();
           final numOfParticipants = otherUids.length + 1;
 
           // //get loaded user
@@ -110,24 +103,25 @@ class _ChatTileState extends State<ChatTile> {
             // Display name of other user
             title = userProfile.name;
           } else {
-            final userProfile = state.profileUser; // Access user profile from map
+            final userProfile =
+                state.profileUser; // Access user profile from map
             final remainingCount = otherUids.length - 1;
             title = '${userProfile.name} và $remainingCount người khác';
           }
-            print(widget.chat.id);
-            print(user.name);
+          print(widget.chat.id);
+          print(user.name);
 
           return ListTile(
-
-            title:  _userInfo != null ? Text(_userInfo!['name'] as String) : const Text('Loading...'),
+            title: _userInfo != null
+                ? Text(_userInfo!['name'] as String)
+                : const Text('Loading...'),
             subtitle: Text(user.email),
-            subtitleTextStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-            leading:
-            CachedNetworkImage(
+            subtitleTextStyle:
+                TextStyle(color: Theme.of(context).colorScheme.primary),
+            leading: CachedNetworkImage(
               imageUrl: user.profileImageUrl,
               //loading...
-              placeholder: (context, url) =>
-              const CircularProgressIndicator(),
+              placeholder: (context, url) => const CircularProgressIndicator(),
 
               //error -> failed to load
               errorWidget: (context, url, error) => Icon(
@@ -142,8 +136,8 @@ class _ChatTileState extends State<ChatTile> {
                 width: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  image: DecorationImage(
-                      image: imageProvider, fit: BoxFit.cover),
+                  image:
+                      DecorationImage(image: imageProvider, fit: BoxFit.cover),
                 ),
               ),
             ),
@@ -154,11 +148,15 @@ class _ChatTileState extends State<ChatTile> {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ChatPage(myId:widget.curUid , friendId: user.uid, friendName: user.name, chatDocId: widget.chat.id,),
+                builder: (context) => ChatPage(
+                  myId: widget.curUid,
+                  friendId: user.uid,
+                  friendName: user.name,
+                  chatDocId: widget.chat.id,
+                ),
               ),
             ),
           );
-
         }
 
         //state loading
@@ -176,9 +174,7 @@ class _ChatTileState extends State<ChatTile> {
             child: Text("No chat found.."),
           );
         }
-
-        }
-      ),
+      }),
     );
   }
 }
