@@ -37,10 +37,10 @@ class ChatCubit extends Cubit<ChatStates> {
       print("fetchChatsByUserId-cubit");
       print("intry");
       emit(ChatLoading());
-      final messengers = await chatRepo.fetchChatsByUserId(userId);
+      final chats = await chatRepo.fetchChatsByUserId(userId);
       print("fetchChatsByUserId-cubit");
       print("intry-qua final");
-      emit(AllChatLoaded(messengers));
+      emit(AllChatLoaded(chats));
     } catch (e) {
       emit(ChatError("Failed to fetch chats: $e"));
       print("fetchChatsByUserId-cubit");

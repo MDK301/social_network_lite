@@ -5,6 +5,7 @@ import 'package:social_network_lite/featured/chat/presentation/pages/chat_page.d
 import 'package:social_network_lite/featured/profile/domain/entities/profile_user.dart';
 import 'package:social_network_lite/featured/profile/presentation/cubits/profile_cubit.dart';
 import 'package:social_network_lite/featured/profile/presentation/pages/profile_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../responsive/constrainEdgeInsets_scaffold.dart';
 import '../../../profile/presentation/cubits/profile_states.dart';
@@ -26,9 +27,26 @@ class ChatTile extends StatefulWidget {
 
 class _ChatTileState extends State<ChatTile> {
 
-  late final profileCubit = context.read<ProfileCubit>();
 
   // toi muon dat tai day
+  Map<String, dynamic>? _userInfo; // Biến để lưu trữ thông tin người dùng
+
+  Future<void> _fetchUserInfo(String uid) async {
+    try {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      if (userSnapshot.exists) {
+        setState(() {
+          _userInfo = userSnapshot.data() as Map<String, dynamic>;
+        });
+      } else {
+        // Xử lý trường hợp tài liệu ngườidùng không tồn tại
+        print('Tài liệu người dùng không tìm thấy cho uid: $uid');
+      }
+    } catch (e) {
+      // Xử lý lỗi
+      print('Lỗi khi lấy thông tin người dùng: $e');
+    }
+  }
 
 
   String getOtherUid(Chat chat, String curUid) {
@@ -48,11 +66,10 @@ class _ChatTileState extends State<ChatTile> {
   }
 @override
   void didChangeDependencies() {
-  String late=getOtherUid(widget.chat,widget.curUid);
-  print("get other uidchat.id - in other uid");
-  print(late);
-  String otherId= getOtherUid(widget.chat,widget.curUid);
-  profileCubit.fetchUserProfile(otherId);
+  // String late=getOtherUid(widget.chat,widget.curUid);
+
+  // String otherId= getOtherUid(widget.chat,widget.curUid);
+  // profileCubit.fetchUserProfile(otherId);
 
     super.didChangeDependencies();
   }
@@ -60,7 +77,12 @@ class _ChatTileState extends State<ChatTile> {
 
   @override
   Widget build(BuildContext context) {
-    String late=getOtherUid(widget.chat,widget.curUid);
+    late final profileCubit = context.read<ProfileCubit>();
+
+    String otherUId= getOtherUid(widget.chat,widget.curUid);
+    profileCubit.getUserProfile(otherUId);
+
+
 
 
 
@@ -97,7 +119,7 @@ class _ChatTileState extends State<ChatTile> {
 
           return ListTile(
 
-            title: Text(title),
+            title:  _userInfo != null ? Text(_userInfo!['name'] as String) : const Text('Loading...'),
             subtitle: Text(user.email),
             subtitleTextStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
             leading:
