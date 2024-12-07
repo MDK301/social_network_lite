@@ -71,17 +71,43 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
                       Icons.arrow_forward,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ChatPage(
-                          myId: widget.curUid,
-                          friendId: _profileuser!.uid,
-                          friendName: _profileuser!.name,
-                          chatDocId: widget.chat.id,
-                        ),
-                      ),
-                    ),
+                    onTap: () {
+
+                      showDialog(
+                        context: context,
+                        builder: (BuildContextcontext) {
+                          return AlertDialog(
+                            title: Text('Confirm Friend Request'),
+                            content: Text('Do you want to accept this friend request?'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('No'),
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // Close the dialog
+                                  // Execute command for "No"
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Đã Xóa Lời Mời Kết Bạn')),
+                                  );
+                                  // ... your code here ...
+                                },
+                              ),
+                              TextButton(
+                                child: Text('Yes'),
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // Close the dialog
+                                  // Execute command for "Yes"
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Đã Chấp Nhận Lời Mời Kết Bạn')),
+                                  );
+                                  // ... your code here ...
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+
+                    }
                   ) : Container(child: CircularProgressIndicator(),)
                 );
               },

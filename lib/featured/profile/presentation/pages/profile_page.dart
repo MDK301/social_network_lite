@@ -134,7 +134,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         builder: (context) => FriendRequestPage(user: user),
                       ),
                     ),
-                    icon: const Icon(Icons.settings),
+                    icon: const Icon(Icons.add_box),
                   ),
 
                 // edit profile button
@@ -179,16 +179,18 @@ class _ProfilePageState extends State<ProfilePage> {
                 if (!isOwnPost)
                   IconButton(
                     onPressed: () async {
-                      String uid = 'user123'; // Thay thế bằng UID thực tế của người dùng
-
                       try {
                         // Gọi hàm lấy danh sách bạn bè và yêu cầu kết bạn
                         await addfriend(currentUser!.uid,user.uid);
+
                       } catch (e) {
                         print('Lỗi khi lấy danh sách bạn bè: $e');
                       }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Đã Gửi Lời Mời Kết Bạn')),
+                      );
                     },
-                    icon: const Icon(Icons.add_box),
+                    icon: const Icon(Icons.person_add_rounded),
                   )
               ],
             ),
