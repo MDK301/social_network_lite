@@ -31,7 +31,7 @@ class Chat {
     return Chat(
       id: json['id'],
       lastMessenger: json['lastMessenger'],
-      lastMessengerTime: (json['lastmessengerTime'] as Timestamp).toDate(),
+      lastMessengerTime: (json['lastMessengerTime'] as Timestamp).toDate(),
       participate: List<String>.from(json['participate']),
       unread: List<String>.from(json['unread'] ?? []),
     );

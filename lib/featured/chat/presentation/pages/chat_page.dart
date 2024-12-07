@@ -2,9 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../profile/domain/entities/profile_user.dart';
+import '../../data/firebase_chat_repo.dart';
 import '../../domain/entities/messenger.dart';
-import '../component/messenger_buble.dart';
 
 class ChatPage extends StatefulWidget {
   final String myId;
@@ -32,25 +31,17 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
   void onSendMessage() async {
     if (_message.text.isNotEmpty) {
-      // print(chatRoomId);
-      Map<String, dynamic> messages = {
-        "sendby": _auth.currentUser!.email,
-        "message": _message.text,
-        "time": FieldValue.serverTimestamp(),
-      };
-      await _firestore
-          .collection('chatroom')
-          .doc(widget.chatDocId)
-          .collection('chats')
-          .add(messages);
-      _message.clear();
-      await _firestore
-          .collection('users')
-          .where('email', isEqualTo: user2Map['email'])
-          .get()
-          .then((value) {
+      Messenger message = Messenger(
+        id: '',
+        senderId: widget.myId,
+        msg: _message.text,
+        createOn: DateTime.now(),
+      );
 
-      });
+      final firebaseChatRepo = FirebaseChatRepo(); // Hoặc truy cập instance hiện có
+      firebaseChatRepo.sendMessenger(widget.chatDocId,message);
+      _message.clear();
+
     } else {
       print("enter Text");
     }
@@ -73,32 +64,6 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final List<Messenger> _messages = [
-      Messenger(
-        id: "1",
-        senderId: "sender1",
-        createOn: DateTime.now(),
-        msg: "Hello, how are you?",
-        msgDocumentUrl: "docUrl1",
-        msgImageUrl: "imgUrl1",
-      ),
-      Messenger(
-        id: "2",
-        senderId: "sender2",
-        createOn: DateTime.now(),
-        msg: "I'm good, thanks!",
-        msgDocumentUrl: "docUrl2",
-        msgImageUrl: "imgUrl2",
-      ),
-      Messenger(
-        id: "3",
-        senderId: "sender1",
-        createOn: DateTime.now(),
-        msg: "Great to hear!",
-        msgDocumentUrl: "docUrl3",
-        msgImageUrl: "imgUrl3",
-      ),
-    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -109,17 +74,27 @@ class _ChatPageState extends State<ChatPage> {
           children: [
             //hiển thị tin nhắn
             Container(
-              height: 200,
-                child: ListView.builder(
-                  itemCount: _messages.length ,
-                  itemBuilder: (context, index) {
-                    // Lấy một tin nhắn từ danh sách
-                    final messenger = _messages[index];
-                    final String m =messenger.msg as String;
-                    return ListTile(
-                      title: Text(m),
+                height: size.height / 1.25,
+                width: size.width,
+                child:
+                StreamBuilder<QuerySnapshot>(
+                  stream: _firestore
+                      .collection('chats')
+                      .doc(widget.chatDocId)
+                      .collection('messenger')
+                      .orderBy("createOn", descending: false)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    return ListView.builder(
+                      itemCount: snapshot.data?.docs.length ,
+                      itemBuilder: (context, index) {
+                        // Lấy một tin nhắn từ danh sách
+                        Map<String, dynamic>? map = snapshot.data?.docs[index]
+                            .data() as Map<String, dynamic>?;
+                        return messages(size, map!);
+                      },
                     );
-                  },
+                  }
                 )),
             //nơi nhập tin nhắn va nut gửi
             Container(
@@ -154,6 +129,30 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+  Widget messages(Size size, Map<String, dynamic> map) {
+    return Container(
+      width: size.width,
+      alignment: map["senderId"] == _auth.currentUser?.email
+          ? Alignment.centerRight
+          : Alignment.centerLeft,
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15), color: Colors.blue),
+        child: Text(
+          map["message"]
+          // map['sendBy']
+          ,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
         ),
       ),
     );

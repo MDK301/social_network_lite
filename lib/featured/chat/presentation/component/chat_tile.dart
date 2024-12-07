@@ -1,14 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/chat/presentation/pages/chat_page.dart';
 import 'package:social_network_lite/featured/profile/domain/entities/profile_user.dart';
 import 'package:social_network_lite/featured/profile/presentation/cubits/profile_cubit.dart';
-import 'package:social_network_lite/featured/profile/presentation/pages/profile_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../../../../responsive/constrainEdgeInsets_scaffold.dart';
-import '../../../profile/presentation/cubits/profile_states.dart';
 import '../../domain/entities/chat.dart';
 
 class ChatTile extends StatefulWidget {
@@ -26,7 +22,6 @@ class _ChatTileState extends State<ChatTile> {
   ProfileUser? _profileuser;
 
   // toi muon dat tai day
-  Map<String, dynamic>? _userInfo; // Biến để lưu trữ thông tin người dùng
 
   Future<void> _fetchUserInfo(String uid) async {
     try {
@@ -52,25 +47,9 @@ class _ChatTileState extends State<ChatTile> {
     return chat.participate.firstWhere((uid) => uid != curUid);
   }
 
-  @override
-  void initState() {
-    // String late=getOtherUid(widget.chat,widget.curUid);
-    // print(late);
-    // String otherId= getOtherUid(widget.chat,widget.curUid);
-    // profileCubit.fetchUserProfile(otherId);
 
-    super.initState();
-  }
 
-  @override
-  void didChangeDependencies() {
-    // String late=getOtherUid(widget.chat,widget.curUid);
 
-    // String otherId= getOtherUid(widget.chat,widget.curUid);
-    // profileCubit.fetchUserProfile(otherId);
-
-    super.didChangeDependencies();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -112,4 +91,5 @@ class _ChatTileState extends State<ChatTile> {
       ),
     );
   }
+
 }

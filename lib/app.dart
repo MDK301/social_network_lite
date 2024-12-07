@@ -12,9 +12,6 @@ import 'package:social_network_lite/featured/profile/presentation/cubits/profile
 import 'package:social_network_lite/featured/search/data/firebase_search_repo.dart';
 import 'package:social_network_lite/featured/search/presentation/cubits/search_cubit.dart';
 import 'package:social_network_lite/featured/storage/data/firebase_storage_repo.dart';
-import 'package:social_network_lite/featured/storage/domain/storage_repo.dart';
-import 'package:social_network_lite/themes/dark_mode.dart';
-import 'package:social_network_lite/themes/light_mode.dart';
 import 'package:social_network_lite/themes/theme_cubit.dart';
 
 import 'featured/auth/presentation/cubits/auth_states.dart';

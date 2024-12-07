@@ -27,6 +27,29 @@ class FirebaseChatRepo implements ChatRepo {
       // Chuyển đổi Messenger sang JSON và thêm vào Firestore
       final docRef = await chatCollection.add(messenger.toJson());
 
+      // Tham chiếu tới document của chat
+      DocumentReference chatRef = firestore.collection('chats').doc(chatId);
+
+      // Cập nhật các trường trong tài liệu
+      if(messenger.msgDocumentUrl !=null && messenger.msgImageUrl !=null && messenger.msg!=null){
+        final lastMessenger=messenger.msg! + ' + file+ ảnh khác...';
+        await chatRef.update({
+          'lastMessenger': lastMessenger,
+          'lastMessengerTime': FieldValue.serverTimestamp(), // Thời gian từ server Firebase
+        });
+      }else if(messenger.msgDocumentUrl !=null || messenger.msgImageUrl !=null ){
+        final lastMessenger='Đã gửi một tệp tin';
+        await chatRef.update({
+          'lastMessenger': lastMessenger,
+          'lastMessengerTime': FieldValue.serverTimestamp(), // Thời gian từ server Firebase
+        });
+      }else{
+        await chatRef.update({
+          'lastMessenger': messenger.msg!,
+          'lastMessengerTime': FieldValue.serverTimestamp(), // Thời gian từ server Firebase
+        });
+      }
+
       // Cập nhật messenger với ID của document vừa tạo
       await docRef.update({
         'id': docRef.id, // Gán ID vừa tạo vào trường 'id'
@@ -118,7 +141,8 @@ class FirebaseChatRepo implements ChatRepo {
   @override
   Future<List<Chat>> fetchChatsByUserId(String userId) async {
     try {
-      print("============================================");
+      print("====================fetchChatsByUserId firebase========================");
+      print(userId);
       // get all posts with most recent posts at the top
       final chatsSnapshot = await chatsCollection
           .where('participate', arrayContains: userId)

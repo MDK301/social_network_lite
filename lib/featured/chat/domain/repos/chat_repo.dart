@@ -1,7 +1,6 @@
 import 'package:social_network_lite/featured/chat/domain/entities/chat.dart';
 import 'package:social_network_lite/featured/chat/domain/entities/messenger.dart';
 
-import '../../../profile/domain/entities/profile_user.dart';
 
 abstract class ChatRepo {
   Future<List<Messenger>> fetchAllMessengers(String chatId);
