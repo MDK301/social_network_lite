@@ -40,8 +40,7 @@ class _AllChatPageState extends State<AllChatPage> {
         return Chat.fromJson(doc.data() as Map<String,
             dynamic>); // Hoặc Messenger.fromJson(doc.data() as Map<String, dynamic>)
       }).toList();
-      String nameuser1=_chat[0].participate[1];
-      String nameuser2=_chat[0].participate[2];
+
     });
   }
 
@@ -67,9 +66,12 @@ class _AllChatPageState extends State<AllChatPage> {
                 //get indivitual chat UwU~
 
                 // image
-                return ChatTile(
-                  chat: _chat[index],
-                  curUid: currentUser!.uid,
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ChatTile(
+                    chat: _chat[index],
+                    curUid: currentUser!.uid,
+                  ),
                 );
               },
             ),

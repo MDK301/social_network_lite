@@ -31,7 +31,7 @@ class _ChatTileState extends State<ChatTile> {
         setState(() {
           _profileuser =
               ProfileUser.fromJson(userSnapshot.data() as Map<String, dynamic>);
-          print(_profileuser?.name);
+          // print(_profileuser?.name);
         });
       } else {
         // Xử lý trường hợp tài liệu ngườidùng không tồn tại

@@ -27,11 +27,22 @@ class Chat {
   }
 
   // convert json -> chat
+  // factory Chat.fromJson(Map<String, dynamic> json) {
+  //   return Chat(
+  //     id: json['id'],
+  //     lastMessenger: json['lastMessenger'],
+  //     lastMessengerTime:json['lastMessageTimestamp'] != null ? (json['lastMessengerTime'] as Timestamp).toDate():  ,
+  //     participate: List<String>.from(json['participate']),
+  //     unread: List<String>.from(json['unread'] ?? []),
+  //   );
+  // }
   factory Chat.fromJson(Map<String, dynamic> json) {
     return Chat(
-      id: json['id'],
-      lastMessenger: json['lastMessenger'],
-      lastMessengerTime: (json['lastMessengerTime'] as Timestamp).toDate(),
+      id: json['id'] as String,
+      lastMessenger: json['lastMessenger']as String,
+      lastMessengerTime: json['lastMessageTimestamp'] != null
+          ? (json['lastMessageTimestamp'] as Timestamp).toDate()
+          :  DateTime.now(), // Assign null if lastMessageTimestamp is null
       participate: List<String>.from(json['participate']),
       unread: List<String>.from(json['unread'] ?? []),
     );

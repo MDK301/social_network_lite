@@ -137,15 +137,16 @@ class _ChatPageState extends State<ChatPage> {
     return Container(
       width: size.width,
       alignment: map["senderId"] == _auth.currentUser?.email
-          ? Alignment.centerRight
-          : Alignment.centerLeft,
+          ? Alignment.centerLeft
+          : Alignment.centerRight,
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
         margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15), color: Colors.blue),
-        child: Text(
-          map["message"]
+        child:map["msg"] != null
+            ?         Text(
+          map["msg"]
           // map['sendBy']
           ,
           style: TextStyle(
@@ -153,7 +154,11 @@ class _ChatPageState extends State<ChatPage> {
             fontWeight: FontWeight.w500,
             color: Colors.white,
           ),
-        ),
+        )
+
+          : const Text('Loading...'),
+
+
       ),
     );
   }
