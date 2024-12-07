@@ -31,12 +31,17 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
       setState(() {
         requestList.clear(); // Clear the existing list
         requestList.addAll(profileUsers); // Add the retrieved profile users
+        print(requestList[0].name);
       });
     } catch (e) {
       print('Error getting request list: $e');
     }
   }
-
+@override
+  void initState() {
+    getRequestList(widget.user);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
