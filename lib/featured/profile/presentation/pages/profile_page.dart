@@ -6,6 +6,7 @@ import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart'
 import 'package:social_network_lite/featured/auth/presentation/cubits/auth_cubit.dart';
 import 'package:social_network_lite/featured/chat/presentation/cubits/chat_cubit.dart';
 import 'package:social_network_lite/featured/chat/presentation/pages/chat_page.dart';
+import 'package:social_network_lite/featured/home/presentation/pages/friend_request_page.dart';
 import 'package:social_network_lite/featured/post/presentation/cubits/post_cubit.dart';
 import 'package:social_network_lite/featured/post/presentation/cubits/post_states.dart';
 import 'package:social_network_lite/featured/profile/presentation/components/bio_box.dart';
@@ -87,59 +88,20 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   //addfriend
-  Future<void> fetchFriendLists(String uid) async {
+  Future<void> addfriend(String currentUid, String targetUid) async {
     try {
-      // Tạo hai danh sách để chứa bạn bè và yêu cầu kết bạn
-      List<String> friendList = [];
-      List<String> friendRequest = [];
+      // Get references to the target user's documents
 
-      // Lấy dữ liệu từ Firestore về người dùng
-      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      final targetUserDoc =
+          FirebaseFirestore.instance.collection('users').doc(targetUid);
 
-      if (userSnapshot.exists) {
-        var userData = userSnapshot.data() as Map<String, dynamic>;
-
-        // Lấy danh sách bạn bè từ tài liệu người dùng (có thể là mảng `friends`)
-        List<dynamic> friends = userData['friends'] ?? [];
-        // Ép kiểu thành List<String> khi thêm vào friendList
-        friendList.addAll(friends.map((e) => e.toString()));
-
-        // Lấy danh sách yêu cầu kết bạn mà người dùng nhận được
-        QuerySnapshot friendRequestSnapshot = await FirebaseFirestore.instance
-            .collection('friendRequests')
-            .where('receiverId', isEqualTo: uid)
-            .where('status', isEqualTo: 'pending') // Status là 'pending' khi yêu cầu kết bạn đang chờ xử lý
-            .get();
-
-        for (var doc in friendRequestSnapshot.docs) {
-          var requestData = doc.data() as Map<String, dynamic>;
-          String senderId = requestData['senderId'];
-
-          // Thêm senderId vào danh sách yêu cầu kết bạn
-          friendRequest.add(senderId);
-        }
-
-        // Lấy các yêu cầu kết bạn đã gửi đi
-        QuerySnapshot sentFriendRequestSnapshot = await FirebaseFirestore.instance
-            .collection('friendRequests')
-            .where('senderId', isEqualTo: uid)
-            .where('status', isEqualTo: 'pending') // Status là 'pending' khi yêu cầu kết bạn đang chờ xử lý
-            .get();
-
-        for (var doc in sentFriendRequestSnapshot.docs) {
-          var requestData = doc.data() as Map<String, dynamic>;
-          String receiverId = requestData['receiverId'];
-
-          // Thêm receiverId vào danh sách yêu cầu kết bạn đã gửi
-          friendRequest.add(receiverId);
-        }
-
-        // In ra danh sách bạn bè và yêu cầu kết bạn
-        print('Friend List: $friendList');
-        print('Friend Requests: $friendRequest');
-      } else {
-        print('Tài liệu người dùng không tồn tại.');
-      }
+      // Update friendRequest and friendList fields
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        transaction.update(targetUserDoc, {
+          'friendRequest': FieldValue.arrayUnion([currentUid]),
+          'friendlist': FieldValue.arrayUnion([]),
+        });
+      });
     } catch (e) {
       print('Lỗi khi lấy danh sách bạn bè: $e');
     }
@@ -163,6 +125,18 @@ class _ProfilePageState extends State<ProfilePage> {
               title: Center(child: Text(user.name)),
               foregroundColor: Theme.of(context).colorScheme.primary,
               actions: [
+                // request listw profile button
+                if (isOwnPost)
+                  IconButton(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FriendRequestPage(user: user),
+                      ),
+                    ),
+                    icon: const Icon(Icons.settings),
+                  ),
+
                 // edit profile button
                 if (isOwnPost)
                   IconButton(
@@ -178,43 +152,41 @@ class _ProfilePageState extends State<ProfilePage> {
                 // start chat button
                 if (!isOwnPost)
                   IconButton(
-                    onPressed: ()async {
+                    onPressed: () async {
                       final chatCubit = context.read<ChatCubit>();
-                      Chat? newChat =await chatCubit.createChat(currentUser!.uid, widget.uid); // Gọi createChat từ ChatCubit
-                      String chatId=newChat!.id;
-                      chatId.isEmpty ?print("CHAT ID BI RONG "):
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChatPage(
-                            myId: currentUser!.uid,
-                            friendId: user.uid,
-                            friendName: user.name,
-                            chatDocId: chatId ,
-                          ),
-                        ),
-                      );
+                      Chat? newChat = await chatCubit.createChat(
+                          currentUser!.uid,
+                          widget.uid); // Gọi createChat từ ChatCubit
+                      String chatId = newChat!.id;
+                      chatId.isEmpty
+                          ? print("CHAT ID BI RONG ")
+                          : Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChatPage(
+                                  myId: currentUser!.uid,
+                                  friendId: user.uid,
+                                  friendName: user.name,
+                                  chatDocId: chatId,
+                                ),
+                              ),
+                            );
                     },
                     icon: const Icon(Icons.chat),
                   ),
+
+                //add friend
                 if (!isOwnPost)
                   IconButton(
-                    onPressed: ()async {
-                      final chatCubit = context.read<ChatCubit>();
-                      Chat? newChat =await chatCubit.createChat(currentUser!.uid, widget.uid); // Gọi createChat từ ChatCubit
-                      String chatId=newChat!.id;
-                      chatId.isEmpty ?print("CHAT ID BI RONG "):
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChatPage(
-                            myId: currentUser!.uid,
-                            friendId: user.uid,
-                            friendName: user.name,
-                            chatDocId: chatId ,
-                          ),
-                        ),
-                      );
+                    onPressed: () async {
+                      String uid = 'user123'; // Thay thế bằng UID thực tế của người dùng
+
+                      try {
+                        // Gọi hàm lấy danh sách bạn bè và yêu cầu kết bạn
+                        await addfriend(currentUser!.uid,user.uid);
+                      } catch (e) {
+                        print('Lỗi khi lấy danh sách bạn bè: $e');
+                      }
                     },
                     icon: const Icon(Icons.add_box),
                   )

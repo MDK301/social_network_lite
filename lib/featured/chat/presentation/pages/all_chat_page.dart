@@ -25,8 +25,7 @@ class _AllChatPageState extends State<AllChatPage> {
 
   late final authCubit = context.read<AuthCubit>();
   late AppUser? currentUser = authCubit.currentUser;
-  late final profileCubit = context.read<ProfileCubit>();
-  late final chatCubit = context.read<ChatCubit>();
+
 
   Future<void> _fetchChatByUserId(String uid) async {
     final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
