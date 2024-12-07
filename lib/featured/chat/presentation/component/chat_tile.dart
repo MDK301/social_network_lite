@@ -31,7 +31,7 @@ class _ChatTileState extends State<ChatTile> {
         setState(() {
           _profileuser =
               ProfileUser.fromJson(userSnapshot.data() as Map<String, dynamic>);
-          // print(_profileuser?.name);
+          // print(_profileuser!.profileImageUrl);
         });
       } else {
         // Xử lý trường hợp tài liệu ngườidùng không tồn tại
@@ -46,10 +46,6 @@ class _ChatTileState extends State<ChatTile> {
   String getOtherUid(Chat chat, String curUid) {
     return chat.participate.firstWhere((uid) => uid != curUid);
   }
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -70,8 +66,14 @@ class _ChatTileState extends State<ChatTile> {
             : const Text('Loading...'),
         subtitleTextStyle:
             TextStyle(color: Theme.of(context).colorScheme.primary),
-        leading:_profileuser != null
-            ? ClipOval(child: Image.network(_profileuser!.profileImageUrl,fit: BoxFit.cover,height: 45,width: 45,))
+        leading: _profileuser != null
+            ? ClipOval(
+                child: Image.network(
+                _profileuser!.profileImageUrl,
+                fit: BoxFit.cover,
+                height: 45,
+                width: 45,
+              ))
             : const Icon(Icons.person),
         trailing: Icon(
           Icons.arrow_forward,
@@ -91,5 +93,4 @@ class _ChatTileState extends State<ChatTile> {
       ),
     );
   }
-
 }

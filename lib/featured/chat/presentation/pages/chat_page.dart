@@ -91,7 +91,11 @@ class _ChatPageState extends State<ChatPage> {
                         // Lấy một tin nhắn từ danh sách
                         Map<String, dynamic>? map = snapshot.data?.docs[index]
                             .data() as Map<String, dynamic>?;
-                        return messages(size, map!);
+                        if (map != null) {
+                          return messages(size, map);
+                        } else {
+                          return CircularProgressIndicator(); // Or any other loading indicator
+                        }
                       },
                     );
                   }
