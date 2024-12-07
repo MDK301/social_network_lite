@@ -8,6 +8,8 @@ import 'package:social_network_lite/featured/chat/presentation/cubits/chat_state
 
 import '../../../auth/domain/entities/app_user.dart';
 import '../../../profile/presentation/cubits/profile_cubit.dart';
+import '../../domain/entities/chat.dart';
+import '../../domain/entities/messenger.dart';
 
 class AllChatPage extends StatefulWidget {
   final String uid;
@@ -19,50 +21,35 @@ class AllChatPage extends StatefulWidget {
 }
 
 class _AllChatPageState extends State<AllChatPage> {
+  List<Chat> _chat = []; // Biến để lưu trữ danh sách Messenger
+
   late final authCubit = context.read<AuthCubit>();
   late AppUser? currentUser = authCubit.currentUser;
   late final profileCubit = context.read<ProfileCubit>();
   late final chatCubit = context.read<ChatCubit>();
 
   Future<void> _fetchChatByUserId(String uid) async {
-    try {
-      // Lấy dữ liệu từ Firestore
-      QuerySnapshot chatSnapshot = await FirebaseFirestore.instance
-          .collection('chats')
-          .where('participate', arrayContains: uid)
-          .get();
+    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('chats')
+        .where('participate', arrayContains: widget.uid)
+        .get();
 
-      // Kiểm tra nếu có bất kỳ tài liệu nào thỏa mãn điều kiện
-      if (chatSnapshot.docs.isNotEmpty) {
-        // Duyệt qua các tài liệu (chats)
-        for (var doc in chatSnapshot.docs) {
-          // Lấy dữ liệu từ tài liệu
-          var chatData = doc.data() as Map<String, dynamic>;
-
-          // Ví dụ: Bạn có thể truy cập các trường trong tài liệu chat
-          print('Chat ID: ${doc.id}');
-          print('Chat Data: $chatData');
-
-          // Nếu bạn muốn lấy thông tin người dùng từ tài liệu chat (ví dụ: lastMessenger)
-          if (chatData['lastMessenger'] != null) {
-            print('Last Messenger: ${chatData['lastMessenger']}');
-          }
-        }
-      } else {
-        // Nếu không có cuộc trò chuyện nào phù hợp
-        print('Không tìm thấy cuộc trò chuyện cho uid: $uid');
-      }
-    } catch (e) {
-      // Xử lý lỗi
-      print('Lỗi khi lấy thông tin người dùng: $e');
-    }
+    setState(() {
+      _chat = querySnapshot.docs.map((doc) {
+        // Sử dụng Messenger.fromJson đe doi ve List
+        return Chat.fromJson(doc.data() as Map<String,
+            dynamic>); // Hoặc Messenger.fromJson(doc.data() as Map<String, dynamic>)
+      }).toList();
+      String nameuser1=_chat[0].participate[1];
+      String nameuser2=_chat[0].participate[2];
+    });
   }
 
   @override
   void initState() {
-    profileCubit.fetchUserProfile(widget.uid);
-    chatCubit.fetchChatsByUserId(widget.uid);
-    print("init state");
+    _fetchChatByUserId(widget.uid);
+
+    print("init state - uid");
     print(widget.uid);
     super.initState();
   }
@@ -74,48 +61,19 @@ class _AllChatPageState extends State<AllChatPage> {
       body: Column(
         children: [
           Expanded(
-            child:
-                BlocBuilder<ChatCubit, ChatStates>(builder: (context, state) {
-              //loading
-              if (state is ChatLoading) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              }
+            child:ListView.builder(
+              itemCount: _chat.length,
+              itemBuilder: (context, index) {
+                //get indivitual chat UwU~
 
-              //loaded
-              else if (state is AllChatLoaded) {
-                final allChats = state.chats;
-                //kiem tra id chat lay ve
-                print(allChats[0].id);
-                print(allChats[1].id);
+                // image
+                return ChatTile(
+                  chat: _chat[index],
+                  curUid: currentUser!.uid,
+                );
+              },
+            ),
 
-                if (allChats.isEmpty) {
-                  return const Center(
-                    child: Text("Start your chat now!  =w= ~ "),
-                  );
-                }
-                return SizedBox(
-                  height: 200,
-                  child: ListView.builder(
-                    itemCount: allChats.length,
-                    itemBuilder: (context, index) {
-                      //get indivitual chat UwU~
-                      final chat = allChats[index];
-                      // image
-                      return ChatTile(
-                        chat: chat,
-                        curUid: currentUser!.uid,
-                      );
-                    },
-                  ),
-                );
-              } else {
-                return const Center(
-                  child: Text("No chat found.."),
-                );
-              }
-            }),
           ),
         ],
       ),
