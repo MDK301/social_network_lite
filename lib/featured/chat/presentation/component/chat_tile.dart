@@ -35,7 +35,8 @@ class _ChatTileState extends State<ChatTile> {
       if (userSnapshot.exists) {
         setState(() {
           _profileuser =
-              ProfileUser.fromJson(userSnapshot );
+              ProfileUser.fromJson(userSnapshot.data() as Map<String, dynamic>);
+          print(_profileuser?.name);
         });
       } else {
         // Xử lý trường hợp tài liệu ngườidùng không tồn tại
@@ -75,106 +76,57 @@ class _ChatTileState extends State<ChatTile> {
   Widget build(BuildContext context) {
     String otherUid = getOtherUid(widget.chat, widget.curUid);
 
-
-
     late final profileCubit = context.read<ProfileCubit>();
-
 
     profileCubit.getUserProfile(otherUid);
     _fetchUserInfo(otherUid);
     return SizedBox(
       height: 50,
-      child: BlocBuilder<ProfileCubit, ProfileState>(builder: (context, state) {
-        //state ok
-        if (state is ProfileLoaded) {
-          //tao bien title
-          String title = "unknow";
+      child: ListTile(
+        title: _profileuser != null
+            ? Text(_profileuser!.name as String)
+            : const Text('Loading...'),
+        subtitle: Text(_profileuser!.email),
+        subtitleTextStyle:
+            TextStyle(color: Theme.of(context).colorScheme.primary),
+        leading: CachedNetworkImage(
+          imageUrl: _profileuser!.profileImageUrl,
+          //loading...
+          placeholder: (context, url) => const CircularProgressIndicator(),
 
-          final otherUids = widget.chat.participate
-              .where((uid) => uid != widget.curUid)
-              .toList();
-          final numOfParticipants = otherUids.length + 1;
+          //error -> failed to load
+          errorWidget: (context, url, error) => Icon(
+            Icons.person,
+            size: 12,
+            color: Theme.of(context).colorScheme.primary,
+          ),
 
-          // //get loaded user
-          ProfileUser user = state.profileUser;
-          if (numOfParticipants == 2) {
-            // Access user profile from map
-            final userProfile = state.profileUser;
-            // Display name of other user
-            title = userProfile.name;
-          } else {
-            final userProfile =
-                state.profileUser; // Access user profile from map
-            final remainingCount = otherUids.length - 1;
-            title = '${userProfile.name} và $remainingCount người khác';
-          }
-          print(widget.chat.id);
-          print(user.name);
-
-          return ListTile(
-            title: _userInfo != null
-                ? Text(_userInfo!['name'] as String)
-                : const Text('Loading...'),
-            subtitle: Text(user.email),
-            subtitleTextStyle:
-                TextStyle(color: Theme.of(context).colorScheme.primary),
-            leading: CachedNetworkImage(
-              imageUrl: user.profileImageUrl,
-              //loading...
-              placeholder: (context, url) => const CircularProgressIndicator(),
-
-              //error -> failed to load
-              errorWidget: (context, url, error) => Icon(
-                Icons.person,
-                size: 12,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-
-              //loaded
-              imageBuilder: (context, imageProvider) => Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image:
-                      DecorationImage(image: imageProvider, fit: BoxFit.cover),
-                ),
-              ),
+          //loaded
+          imageBuilder: (context, imageProvider) => Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
             ),
-            trailing: Icon(
-              Icons.arrow_forward,
-              color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(
+              myId: widget.curUid,
+              friendId: _profileuser!.uid,
+              friendName: _profileuser!.name,
+              chatDocId: widget.chat.id,
             ),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatPage(
-                  myId: widget.curUid,
-                  friendId: user.uid,
-                  friendName: user.name,
-                  chatDocId: widget.chat.id,
-                ),
-              ),
-            ),
-          );
-        }
-
-        //state loading
-        else if (state is ProfileLoading) {
-          return const ConstrainedScaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-
-        //state khong tim thay
-        else {
-          return const Center(
-            child: Text("No chat found.."),
-          );
-        }
-      }),
+          ),
+        ),
+      ),
     );
   }
 }

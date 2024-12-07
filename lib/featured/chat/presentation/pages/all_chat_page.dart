@@ -71,10 +71,9 @@ class _AllChatPageState extends State<AllChatPage> {
                   child: ListView.builder(
                     itemCount: allChats.length,
                     itemBuilder: (context, index) {
+
                       //get indivitual chat UwU~
                       final chat = allChats[index];
-                      // print(allChats[index].id);
-
                       // image
                       return ChatTile(
                         chat: allChats[index],
