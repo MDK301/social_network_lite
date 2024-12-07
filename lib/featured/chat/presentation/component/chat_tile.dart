@@ -84,33 +84,16 @@ class _ChatTileState extends State<ChatTile> {
       height: 50,
       child: ListTile(
         title: _profileuser != null
-            ? Text(_profileuser!.name as String)
+            ? Text(_profileuser!.name)
             : const Text('Loading...'),
-        subtitle: Text(_profileuser!.email),
+        subtitle: _profileuser != null
+            ? Text(_profileuser!.email)
+            : const Text('Loading...'),
         subtitleTextStyle:
             TextStyle(color: Theme.of(context).colorScheme.primary),
-        leading: CachedNetworkImage(
-          imageUrl: _profileuser!.profileImageUrl,
-          //loading...
-          placeholder: (context, url) => const CircularProgressIndicator(),
-
-          //error -> failed to load
-          errorWidget: (context, url, error) => Icon(
-            Icons.person,
-            size: 12,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-
-          //loaded
-          imageBuilder: (context, imageProvider) => Container(
-            height: 40,
-            width: 40,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(image: imageProvider, fit: BoxFit.cover),
-            ),
-          ),
-        ),
+        leading:_profileuser != null
+            ? ClipOval(child: Image.network(_profileuser!.profileImageUrl,fit: BoxFit.cover,height: 45,width: 45,))
+            : const Icon(Icons.person),
         trailing: Icon(
           Icons.arrow_forward,
           color: Theme.of(context).colorScheme.primary,
