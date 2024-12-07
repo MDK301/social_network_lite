@@ -5,6 +5,8 @@ class ProfileUser extends AppUser {
   final String profileImageUrl;
   final List<String> followers;
   final List<String> following;
+  final List<String>? friendlist;
+  final List<String>? friendRequest;
 
   ProfileUser({
     required super.uid,
@@ -14,6 +16,8 @@ class ProfileUser extends AppUser {
     required this.profileImageUrl,
     required this.followers,
     required this.following,
+     this.friendlist,
+     this.friendRequest,
   });
 
   //method to update profile user
@@ -21,6 +25,8 @@ class ProfileUser extends AppUser {
     String? newprofileImageUrl,
     List<String>? newFollowers,
     List<String>? newFollowing,
+    List<String>? newfriendlist,
+    List<String>? newfriendRequest,
   }) {
     return ProfileUser(
         uid: uid,
@@ -29,7 +35,10 @@ class ProfileUser extends AppUser {
         bio: newBio ?? bio,
         profileImageUrl: newprofileImageUrl ?? profileImageUrl,
         followers: newFollowers ?? followers,
-        following: newFollowing ?? following);
+        following: newFollowing ?? following,
+        friendlist: newfriendlist ?? friendlist,
+        friendRequest: newfriendRequest ?? friendRequest,
+    );
   }
 
   //chuyển profile sang json
@@ -42,6 +51,8 @@ class ProfileUser extends AppUser {
       'profileImageUrl': profileImageUrl,
       'followers': followers,
       'following': following,
+      'friendlist': friendlist,
+      'friendRequest': friendRequest,
     };
   }
 
@@ -55,6 +66,8 @@ class ProfileUser extends AppUser {
       profileImageUrl: json['profileImageUrl'] ?? '',
       followers: List<String>.from(json['followers'] ?? []),
       following: List<String>.from(json['following'] ?? []),
+      friendlist: List<String>.from(json['friendlist'] ?? []),
+      friendRequest: List<String>.from(json['friendRequest'] ?? []),
     );
   }
 }

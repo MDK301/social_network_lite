@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart';
@@ -85,6 +86,65 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  //addfriend
+  Future<void> fetchFriendLists(String uid) async {
+    try {
+      // Tạo hai danh sách để chứa bạn bè và yêu cầu kết bạn
+      List<String> friendList = [];
+      List<String> friendRequest = [];
+
+      // Lấy dữ liệu từ Firestore về người dùng
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+      if (userSnapshot.exists) {
+        var userData = userSnapshot.data() as Map<String, dynamic>;
+
+        // Lấy danh sách bạn bè từ tài liệu người dùng (có thể là mảng `friends`)
+        List<dynamic> friends = userData['friends'] ?? [];
+        // Ép kiểu thành List<String> khi thêm vào friendList
+        friendList.addAll(friends.map((e) => e.toString()));
+
+        // Lấy danh sách yêu cầu kết bạn mà người dùng nhận được
+        QuerySnapshot friendRequestSnapshot = await FirebaseFirestore.instance
+            .collection('friendRequests')
+            .where('receiverId', isEqualTo: uid)
+            .where('status', isEqualTo: 'pending') // Status là 'pending' khi yêu cầu kết bạn đang chờ xử lý
+            .get();
+
+        for (var doc in friendRequestSnapshot.docs) {
+          var requestData = doc.data() as Map<String, dynamic>;
+          String senderId = requestData['senderId'];
+
+          // Thêm senderId vào danh sách yêu cầu kết bạn
+          friendRequest.add(senderId);
+        }
+
+        // Lấy các yêu cầu kết bạn đã gửi đi
+        QuerySnapshot sentFriendRequestSnapshot = await FirebaseFirestore.instance
+            .collection('friendRequests')
+            .where('senderId', isEqualTo: uid)
+            .where('status', isEqualTo: 'pending') // Status là 'pending' khi yêu cầu kết bạn đang chờ xử lý
+            .get();
+
+        for (var doc in sentFriendRequestSnapshot.docs) {
+          var requestData = doc.data() as Map<String, dynamic>;
+          String receiverId = requestData['receiverId'];
+
+          // Thêm receiverId vào danh sách yêu cầu kết bạn đã gửi
+          friendRequest.add(receiverId);
+        }
+
+        // In ra danh sách bạn bè và yêu cầu kết bạn
+        print('Friend List: $friendList');
+        print('Friend Requests: $friendRequest');
+      } else {
+        print('Tài liệu người dùng không tồn tại.');
+      }
+    } catch (e) {
+      print('Lỗi khi lấy danh sách bạn bè: $e');
+    }
+  }
+
   // BUILD UI
   @override
   Widget build(BuildContext context) {
@@ -114,6 +174,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     icon: const Icon(Icons.settings),
                   ),
+
                 // start chat button
                 if (!isOwnPost)
                   IconButton(
@@ -135,6 +196,27 @@ class _ProfilePageState extends State<ProfilePage> {
                       );
                     },
                     icon: const Icon(Icons.chat),
+                  ),
+                if (!isOwnPost)
+                  IconButton(
+                    onPressed: ()async {
+                      final chatCubit = context.read<ChatCubit>();
+                      Chat? newChat =await chatCubit.createChat(currentUser!.uid, widget.uid); // Gọi createChat từ ChatCubit
+                      String chatId=newChat!.id;
+                      chatId.isEmpty ?print("CHAT ID BI RONG "):
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatPage(
+                            myId: currentUser!.uid,
+                            friendId: user.uid,
+                            friendName: user.name,
+                            chatDocId: chatId ,
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.add_box),
                   )
               ],
             ),

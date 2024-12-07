@@ -20,6 +20,8 @@ class FirebaseProfileRepo implements ProfileRepo {
           // fetch followers & following
           final followers = List<String>.from(userData['followers'] ?? []);
           final following = List<String>.from(userData['following'] ?? []);
+          final friendRequest = List<String>.from(userData['friendRequest'] ?? []);
+          final friendlist = List<String>.from(userData['friendlist'] ?? []);
 
           return ProfileUser(
             uid: uid,
@@ -29,6 +31,8 @@ class FirebaseProfileRepo implements ProfileRepo {
             profileImageUrl: userData['profileImageUrl'].toString(),
             followers: followers,
             following: following,
+            friendRequest: friendRequest,
+            friendlist: friendlist,
           );
         }
       }
