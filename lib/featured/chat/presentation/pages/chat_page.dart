@@ -140,7 +140,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget messages(Size size, Map<String, dynamic> map) {
     return Container(
       width: size.width,
-      alignment: map["senderId"] == _auth.currentUser?.email
+      alignment: map["senderId"] != widget.myId
           ? Alignment.centerLeft
           : Alignment.centerRight,
       child: Container(

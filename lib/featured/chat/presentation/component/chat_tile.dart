@@ -66,7 +66,7 @@ class _ChatTileState extends State<ChatTile> {
             : const Text('Loading...'),
         subtitleTextStyle:
             TextStyle(color: Theme.of(context).colorScheme.primary),
-        leading: _profileuser != null
+        leading: _profileuser != ''
             ? ClipOval(
                 child: Image.network(
                 _profileuser!.profileImageUrl,
