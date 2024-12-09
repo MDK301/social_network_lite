@@ -11,6 +11,60 @@ class FriendRequestPage extends StatefulWidget {
   State<FriendRequestPage> createState() => _FriendRequestPageState();
 }
 
+Future<void> reject(String currentUid, String targetUid) async {
+  try {
+    // Get reference to the target user's document
+    final targetUserDoc =
+    FirebaseFirestore.instance.collection('users').doc(targetUid);
+
+    // Run Firestore transaction to remove currentUid from friendRequest
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
+      // Remove currentUid from 'friendRequest' array
+      transaction.update(targetUserDoc, {
+        'friendRequest': FieldValue.arrayRemove([currentUid]),
+      });
+    });
+
+    print('Yêu cầu kết bạn đã bị từ chối');
+  } catch (e) {
+    print('Lỗi khi từ chối yêu cầu kết bạn: $e');
+  }
+}
+
+Future<void> accept (String currentUid, String targetUid) async {
+  try {
+    // Get reference to the target user's document
+    final targetUserDoc =
+    FirebaseFirestore.instance.collection('users').doc(targetUid);
+
+    // Get reference to the my user's document
+    final currentUserDoc =
+    FirebaseFirestore.instance.collection('users').doc(currentUid);
+
+    // Run Firestore transaction to remove currentUid from friendRequest
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
+
+
+      transaction.update(targetUserDoc, {
+        'friendlist': FieldValue.arrayUnion([currentUid]),
+      });
+      transaction.update(currentUserDoc, {
+        'friendlist': FieldValue.arrayUnion([targetUid]),
+      });
+
+      // Remove currentUid from 'friendRequest' array
+      transaction.update(targetUserDoc, {
+        'friendRequest': FieldValue.arrayRemove([currentUid]),
+      });
+
+
+    });
+
+    print('Yêu cầu kết bạn đã được chấp thuận');
+  } catch (e) {
+    print('Lỗi khi chấp thuận yêu cầu kết bạn: $e');
+  }
+}
 class _FriendRequestPageState extends State<FriendRequestPage> {
   final List<ProfileUser> requestList=[];
   Future<void> getRequestList(ProfileUser user) async {
@@ -37,6 +91,8 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
       print('Error getting request list: $e');
     }
   }
+
+
 @override
   void initState() {
     getRequestList(widget.user);
@@ -94,6 +150,9 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
                                     SnackBar(content: Text('Đã Xóa Lời Mời Kết Bạn')),
                                   );
                                   // ... your code here ...
+                                  reject(widget.user.uid, requestList[index].uid);
+                                  getRequestList(widget.user);
+
                                 },
                               ),
                               TextButton(
@@ -105,6 +164,9 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
                                     SnackBar(content: Text('Đã Chấp Nhận Lời Mời Kết Bạn')),
                                   );
                                   // ... your code here ...
+                                  accept(widget.user.uid, requestList[index].uid);
+                                  getRequestList(widget.user);
+
                                 },
                               ),
                             ],

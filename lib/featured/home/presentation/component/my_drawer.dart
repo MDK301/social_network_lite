@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/presentation/cubits/auth_cubit.dart';
 import 'package:social_network_lite/featured/chat/presentation/pages/all_chat_page.dart';
+import 'package:social_network_lite/featured/friend_list/page/friend_list_page.dart';
 import 'package:social_network_lite/featured/profile/presentation/pages/profile_page.dart';
 import 'package:social_network_lite/featured/search/presentation/pages/search_page.dart';
 import 'package:social_network_lite/featured/setting/pages/page.dart';
@@ -87,6 +88,16 @@ class MyDrawer extends StatelessWidget {
                       ),
                     ),
                   );
+                },
+              ),
+
+              // friend list tile
+              MyDrawerTile(
+                title: "F R I E N D  L I S T",
+                icon: Icons.list,
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => FriendListPage()));
                 },
               ),
 

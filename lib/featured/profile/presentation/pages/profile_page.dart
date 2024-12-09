@@ -95,13 +95,29 @@ class _ProfilePageState extends State<ProfilePage> {
       final targetUserDoc =
           FirebaseFirestore.instance.collection('users').doc(targetUid);
 
-      // Update friendRequest and friendList fields
-      await FirebaseFirestore.instance.runTransaction((transaction) async {
-        transaction.update(targetUserDoc, {
-          'friendRequest': FieldValue.arrayUnion([currentUid]),
-          'friendlist': FieldValue.arrayUnion([]),
-        });
-      });
+      // Get the current user's friendlist
+      final currentUserSnapshot = await targetUserDoc.get();
+
+      // Check if currentUid is already in the target's friendlist
+      if (currentUserSnapshot.exists) {
+        // Get the list of friend IDs from current user's friendlist
+        List<dynamic> currentFriendList =
+            currentUserSnapshot.data()?['friendlist'] ?? [];
+
+        // Check if targetUid is already in current user's friendlist
+        if (currentFriendList.contains(targetUid)) {
+          print('Bạn đã là bạn bè với người này.');
+          return; // Không làm gì nếu đã là bạn bè
+        } else {
+          // Update friendRequest and friendList fields
+          await FirebaseFirestore.instance.runTransaction((transaction) async {
+            transaction.update(targetUserDoc, {
+              'friendRequest': FieldValue.arrayUnion([currentUid]),
+              'friendlist': FieldValue.arrayUnion([]),
+            });
+          });
+        }
+      }
     } catch (e) {
       print('Lỗi khi lấy danh sách bạn bè: $e');
     }
@@ -125,7 +141,8 @@ class _ProfilePageState extends State<ProfilePage> {
               title: Center(child: Text(user.name)),
               foregroundColor: Theme.of(context).colorScheme.primary,
               actions: [
-                // request listw profile button
+
+                // request list profile button
                 if (isOwnPost)
                   IconButton(
                     onPressed: () => Navigator.push(
@@ -181,8 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     onPressed: () async {
                       try {
                         // Gọi hàm lấy danh sách bạn bè và yêu cầu kết bạn
-                        await addfriend(currentUser!.uid,user.uid);
-
+                        await addfriend(currentUser!.uid, user.uid);
                       } catch (e) {
                         print('Lỗi khi lấy danh sách bạn bè: $e');
                       }

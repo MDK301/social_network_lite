@@ -46,23 +46,23 @@ class _AllChatPageState extends State<AllChatPage> {
   @override
   void initState() {
     _fetchChatByUserId(widget.uid);
-
-    print("init state - uid");
-    print(widget.uid);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    if (_chat != '') {
+      return Scaffold(
       appBar: AppBar(),
       body: Column(
         children: [
           Expanded(
             child:ListView.builder(
+
               itemCount: _chat.length,
               itemBuilder: (context, index) {
                 //get indivitual chat UwU~
+
 
                 // image
                 return Padding(
@@ -79,5 +79,8 @@ class _AllChatPageState extends State<AllChatPage> {
         ],
       ),
     );
+    } else {
+      return CircularProgressIndicator();
+    }
   }
 }

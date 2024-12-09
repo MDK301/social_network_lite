@@ -55,20 +55,19 @@ class _ChatTileState extends State<ChatTile> {
 
     profileCubit.getUserProfile(otherUid);
     _fetchUserInfo(otherUid);
-    final title=_profileuser!.name;
-    final subtitle=_profileuser!.email;
-    final leading=_profileuser!.profileImageUrl;
+
     return SizedBox(
       height: 50,
       child: ListTile(
-        title:Text(title) ,
-        subtitle: Text(subtitle),
+        title:Text(_profileuser?.name ?? 'loading') ,
+        subtitle: Text(_profileuser?.email?? 'loading'),
         subtitleTextStyle:
             TextStyle(color: Theme.of(context).colorScheme.primary),
-        leading: leading != ''
+        leading: _profileuser?.profileImageUrl != ''
             ? ClipOval(
-                child: Image.network(
-                  leading,
+                child: FadeInImage.assetNetwork(
+                  placeholder: 'assets/image/icons8-person-30.png',
+                  image: _profileuser!.profileImageUrl ?? '',
                 fit: BoxFit.cover,
                 height: 45,
                 width: 45,
