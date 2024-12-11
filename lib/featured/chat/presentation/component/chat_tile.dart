@@ -59,6 +59,7 @@ class _ChatTileState extends State<ChatTile> {
     profileCubit.getUserProfile(otherUid);
     _fetchUserInfo(otherUid);
 
+    //sua lai cach hien thi cua thoi gian <(") code nhu messenger
     String _formatTimestamp(Timestamp timestamp) {
       final now = DateTime.now();
       final difference = now.difference(timestamp.toDate());
@@ -72,9 +73,9 @@ class _ChatTileState extends State<ChatTile> {
       } else {
         return 'Vừa xong';
       }
-    }
+    };
 
-    ;
+
 
     return StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
@@ -86,6 +87,7 @@ class _ChatTileState extends State<ChatTile> {
             final chatData = snapshot.data!.data() as Map<String, dynamic>;
             // Cập nhật dữ liệu của ChatTile từ chatData
             final lastMessage = chatData['lastMessenger'] as String?;
+            final senderUid = chatData['sender'] as String?;
             final timestamp = chatData['lastMessengerTime'] as Timestamp?;
 
             return FutureBuilder<ProfileUser?>(
@@ -101,9 +103,21 @@ class _ChatTileState extends State<ChatTile> {
 
                         // subtitle: Text(widget.chat.lastMessenger ?? 'loading'),
 
-                        subtitle: Text(
-                          lastMessage ?? 'loading',
-                          overflow: TextOverflow.ellipsis,
+                        subtitle: FutureBuilder<ProfileUser?>(
+                          future: _fetchUserInfo(chatData['sender'] as String),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData && snapshot.data != null) {
+                              final senderName = snapshot.data!.name;
+                              return Text(
+                                '$senderName: ${lastMessage ?? ''}',
+                                overflow: TextOverflow.ellipsis,
+                              );
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else {
+                              return const Text('Đang tải...');
+                            }
+                          },
                         ),
                         trailing: timestamp != null
                             ? Text(
