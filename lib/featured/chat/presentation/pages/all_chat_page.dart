@@ -53,7 +53,7 @@ class _AllChatPageState extends State<AllChatPage> {
   Widget build(BuildContext context) {
     if (_chat != '') {
       return Scaffold(
-      appBar: AppBar(title: Text("Y O U R  C H A T S  "),),
+      appBar: AppBar(title: Text("Y O U R  C H A T S"),),
       body: Column(
         children: [
           Expanded(
@@ -81,7 +81,10 @@ class _AllChatPageState extends State<AllChatPage> {
       ),
     );
     } else {
-      return CircularProgressIndicator();
+      return const SizedBox(
+          height: 12,
+          width: 12,
+          child: CircularProgressIndicator());
     }
   }
 }

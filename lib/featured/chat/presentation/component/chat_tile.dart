@@ -77,7 +77,7 @@ class _ChatTileState extends State<ChatTile> {
               height: 50,
               child: ListTile(
                 title: Text(_profileuser?.name ?? 'loading'),
-                subtitle: Text(_profileuser?.email ?? 'loading'),
+                subtitle: Text(widget.chat.lastMessenger ?? 'loading'),
                 subtitleTextStyle:
                 TextStyle(color: Theme
                     .of(context)

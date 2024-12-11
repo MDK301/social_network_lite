@@ -35,17 +35,20 @@ class FirebaseChatRepo implements ChatRepo {
         final lastMessenger=messenger.msg! + ' + file+ ảnh khác...';
         await chatRef.update({
           'lastMessenger': lastMessenger,
+          'sender': messenger.senderId,
           'lastMessengerTime': FieldValue.serverTimestamp(), // Thời gian từ server Firebase
         });
       }else if(messenger.msgDocumentUrl !=null || messenger.msgImageUrl !=null ){
         final lastMessenger='Đã gửi một tệp tin';
         await chatRef.update({
           'lastMessenger': lastMessenger,
+          'sender': messenger.senderId,
           'lastMessengerTime': FieldValue.serverTimestamp(), // Thời gian từ server Firebase
         });
       }else{
         await chatRef.update({
           'lastMessenger': messenger.msg!,
+          'sender': messenger.senderId,
           'lastMessengerTime': FieldValue.serverTimestamp(), // Thời gian từ server Firebase
         });
       }
