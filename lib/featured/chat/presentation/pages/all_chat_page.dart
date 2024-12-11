@@ -68,6 +68,7 @@ class _AllChatPageState extends State<AllChatPage> {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ChatTile(
+
                     chat: _chat[index],
                     curUid: currentUser!.uid,
                   ),
