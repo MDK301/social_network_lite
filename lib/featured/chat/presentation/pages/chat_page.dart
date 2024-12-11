@@ -11,7 +11,6 @@ class ChatPage extends StatefulWidget {
   final String friendName;
   final String chatDocId;
 
-
   const ChatPage(
       {super.key,
       required this.myId,
@@ -29,6 +28,7 @@ class _ChatPageState extends State<ChatPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final TextEditingController _messageController = TextEditingController();
+
   void onSendMessage() async {
     if (_message.text.isNotEmpty) {
       Messenger message = Messenger(
@@ -38,15 +38,14 @@ class _ChatPageState extends State<ChatPage> {
         createOn: DateTime.now(),
       );
 
-      final firebaseChatRepo = FirebaseChatRepo(); // Hoặc truy cập instance hiện có
-      firebaseChatRepo.sendMessenger(widget.chatDocId,message);
+      final firebaseChatRepo =
+          FirebaseChatRepo(); // Hoặc truy cập instance hiện có
+      firebaseChatRepo.sendMessenger(widget.chatDocId, message);
       _message.clear();
-
     } else {
       print("enter Text");
     }
   }
-
 
   @override
   void initState() {
@@ -76,30 +75,28 @@ class _ChatPageState extends State<ChatPage> {
             Container(
                 height: size.height / 1.25,
                 width: size.width,
-                child:
-                StreamBuilder<QuerySnapshot>(
-                  stream: _firestore
-                      .collection('chats')
-                      .doc(widget.chatDocId)
-                      .collection('messenger')
-                      .orderBy("createOn", descending: false)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    return ListView.builder(
-                      itemCount: snapshot.data?.docs.length ,
-                      itemBuilder: (context, index) {
-                        // Lấy một tin nhắn từ danh sách
-                        Map<String, dynamic>? map = snapshot.data?.docs[index]
-                            .data() as Map<String, dynamic>?;
-                        if (map != null) {
-                          return messages(size, map);
-                        } else {
-                          return CircularProgressIndicator(); // Or any other loading indicator
-                        }
-                      },
-                    );
-                  }
-                )),
+                child: StreamBuilder<QuerySnapshot>(
+                    stream: _firestore
+                        .collection('chats')
+                        .doc(widget.chatDocId)
+                        .collection('messenger')
+                        .orderBy("createOn", descending: false)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      return ListView.builder(
+                        itemCount: snapshot.data?.docs.length,
+                        itemBuilder: (context, index) {
+                          // Lấy một tin nhắn từ danh sách
+                          Map<String, dynamic>? map = snapshot.data?.docs[index]
+                              .data() as Map<String, dynamic>?;
+                          if (map != null) {
+                            return messages(size, map);
+                          } else {
+                            return CircularProgressIndicator(); // Or any other loading indicator
+                          }
+                        },
+                      );
+                    })),
             //nơi nhập tin nhắn va nut gửi
             Container(
               height: size.height / 10,
@@ -115,12 +112,15 @@ class _ChatPageState extends State<ChatPage> {
                       width: size.width / 1.3,
                       child: TextField(
                         controller: _message,
+                        maxLines: null, //cho phep xuong dong
+                        keyboardType: TextInputType.multiline,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
                           hintText: "type messenger..",
-                          hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+                          hintStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.primary),
                         ),
                       ),
                     ),
@@ -137,6 +137,7 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
+
   Widget messages(Size size, Map<String, dynamic> map) {
     return Container(
       width: size.width,
@@ -144,23 +145,31 @@ class _ChatPageState extends State<ChatPage> {
           ? Alignment.centerLeft
           : Alignment.centerRight,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15), color: Colors.blue),
-        child:map["msg"] != null
-            ?         Text(
-          map["msg"]
-          // map['sendBy']
-          ,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
-          ),
-        )
-
-          : const Text('Loading...'),
+            borderRadius: BorderRadius.circular(25),
+            color:
+          map["senderId"] != widget.myId
+        ? Theme.of(context).colorScheme.inversePrimary
+          : Theme.of(context).colorScheme.primary,
+        ),
+        child: Column(children: [
+          (map["msg"] != null)
+              ? Text(
+            map["msg"]
+            // map['sendBy']
+            ,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: map["senderId"] != widget.myId
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.inversePrimary,
+            ),
+          )
+              : const Text('Loading...'),
+        ],)
 
 
       ),

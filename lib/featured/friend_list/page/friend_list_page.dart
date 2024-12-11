@@ -5,6 +5,7 @@ import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart'
 import 'package:social_network_lite/featured/profile/domain/entities/profile_user.dart';
 
 import '../../auth/presentation/cubits/auth_cubit.dart';
+import '../../profile/presentation/pages/profile_page.dart';
 
 class FriendListPage extends StatefulWidget {
   const FriendListPage({super.key});
@@ -17,7 +18,7 @@ class _FriendListPageState extends State<FriendListPage> {
   late final authCubit = context.read<AuthCubit>();
   late AppUser? currentUser = authCubit.currentUser;
 
-  final List<ProfileUser> requestList=[];
+  final List<ProfileUser> friendList=[];
   Future<void> getFriendList(String uid) async {
     try {
       // Get the current user's document using the user's UID
@@ -34,9 +35,9 @@ class _FriendListPageState extends State<FriendListPage> {
       }));
 
       setState(() {
-        requestList.clear(); // Clear the existing list
-        requestList.addAll(profileUsers); // Add the retrieved profile users
-        print(requestList[0].name);
+        friendList.clear(); // Clear the existing list
+        friendList.addAll(profileUsers); // Add the retrieved profile users
+        // print(friendList[0].name);
       });
     } catch (e) {
       print('Error getting request list: $e');
@@ -56,66 +57,42 @@ class _FriendListPageState extends State<FriendListPage> {
         children: [
           Expanded(
             child:ListView.builder(
-              itemCount: requestList.length,
+              itemCount: friendList.length,
               itemBuilder: (context, index) {
                 //get indivitual chat UwU~
 
                 // image
                 return Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: requestList[index] != null ?
+                    child: friendList[index] != null ?
                     ListTile(
-                        title:  Text(requestList[index].name),
-                        subtitle: Text(requestList[index].email),
+                        title:  Text(friendList[index].name),
+                        subtitle: Text(friendList[index].email),
                         subtitleTextStyle:
                         TextStyle(color: Theme.of(context).colorScheme.primary),
-                        leading: requestList[index].profileImageUrl != ''
+                        leading: friendList[index].profileImageUrl != ''
                             ? ClipOval(
                             child: Image.network(
-                              requestList[index].profileImageUrl,
+                              friendList[index].profileImageUrl,
                               fit: BoxFit.cover,
                               height: 45,
                               width: 45,
                             ))
                             : const Icon(Icons.person),
+
                         trailing: Icon(
                           Icons.arrow_forward,
                           color: Theme.of(context).colorScheme.primary,
                         ),
+
                         onTap: () {
 
-                          showDialog(
-                            context: context,
-                            builder: (BuildContextcontext) {
-                              return AlertDialog(
-                                title: Text('Confirm Friend Request'),
-                                content: Text('Do you want to accept this friend request?'),
-                                actions: <Widget>[
-                                  TextButton(
-                                    child: Text('No'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop(); // Close the dialog
-                                      // Execute command for "No"
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Đã Xóa Lời Mời Kết Bạn')),
-                                      );
-                                      // ... your code here ...
-                                    },
-                                  ),
-                                  TextButton(
-                                    child: Text('Yes'),
-                                    onPressed: () {
-                                      Navigator.of(context).pop(); // Close the dialog
-                                      // Execute command for "Yes"
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Đã Chấp Nhận Lời Mời Kết Bạn')),
-                                      );
-                                      // ... your code here ...
-                                    },
-                                  ),
-                                ],
-                              );
-                            },
+                          Navigator.of(context).pop(); // Close the dialog
+                          Navigator.push(context,MaterialPageRoute(
+                            builder: (context) => ProfilePage(
+                              uid:  friendList[index].uid,
+                            ),
+                          ),
                           );
 
                         }
