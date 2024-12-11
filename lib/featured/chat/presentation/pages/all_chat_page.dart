@@ -36,8 +36,7 @@ class _AllChatPageState extends State<AllChatPage> {
     setState(() {
       _chat = querySnapshot.docs.map((doc) {
         // Sử dụng Messenger.fromJson đe doi ve List
-        return Chat.fromJson(doc.data() as Map<String,
-            dynamic>); // Hoặc Messenger.fromJson(doc.data() as Map<String, dynamic>)
+        return Chat.fromJson(doc.data() as Map<String,dynamic>); // Hoặc Messenger.fromJson(doc.data() as Map<String, dynamic>)
       }).toList();
 
     });

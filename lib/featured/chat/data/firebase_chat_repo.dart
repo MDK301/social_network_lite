@@ -32,7 +32,7 @@ class FirebaseChatRepo implements ChatRepo {
 
       // Cập nhật các trường trong tài liệu
       if(messenger.msgDocumentUrl !=null && messenger.msgImageUrl !=null && messenger.msg!=null){
-        final lastMessenger=messenger.msg! + ' + file+ ảnh khác...';
+        final lastMessenger='Một tin nhắn + file + ảnh khác ';
         await chatRef.update({
           'lastMessenger': lastMessenger,
           'sender': messenger.senderId,
@@ -84,7 +84,7 @@ class FirebaseChatRepo implements ChatRepo {
         print("Chat already exists with ID: ${existingChat.id}");
         return Chat(
           id: existingChat.id,
-          lastMessengerTime: (existingChat['lastmessengerTime'] as Timestamp).toDate(),
+          lastMessengerTime: (existingChat['lastMessengerTime'] as Timestamp).toDate(),
           participate: List<String>.from(existingChat['participate']),
         );
       } else {
@@ -99,7 +99,7 @@ class FirebaseChatRepo implements ChatRepo {
         await docRef.set({
           'id': docRef.id,
           'lastMessenger': '',
-          'lastmessengerTime': currentTimestamp,
+          'lastMessengerTime': currentTimestamp,
           'participate': [uid1, uid2],
           'unread': [uid1, uid2],
         });
