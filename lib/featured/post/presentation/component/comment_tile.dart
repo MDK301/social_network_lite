@@ -26,6 +26,7 @@ class _CommentTileState extends State<CommentTile> {
   void initState() {
     super.initState();
     getCurrentUser();
+
   }
 
   void getCurrentUser() {

@@ -148,7 +148,11 @@ class FirebasePostRepo implements PostRepo {
 
       // get the post document from firestore
       final postDoc = await postsCollection.doc(postId).get();
+      print('postId: $postId'); // In giá trị của postId
+      print('commentId: $commentId'); // In giá trị của postId
+      print('postsCollection: ${postsCollection.path}'); // In đường dẫn của collection
       if (postDoc.exists) {
+
         // convert json object -> post
         final post = Post.fromJson(postDoc.data() as Map<String, dynamic>);
         // Find the comment by commentId
@@ -161,6 +165,8 @@ class FirebasePostRepo implements PostRepo {
 
           if (hasLiked) {
             comment.likes.remove(userId); // Unlike
+            print('userId: $userId'); // In giá trị của postId
+
           } else {
             comment.likes.add(userId); // Like
           }
