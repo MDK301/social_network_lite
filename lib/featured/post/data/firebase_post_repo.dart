@@ -154,6 +154,7 @@ class FirebasePostRepo implements PostRepo {
         final post = Post.fromJson(postDoc.data() as Map<String, dynamic>);
         // Find the comment by commentId
         final commentIndex = post.comments.indexWhere((comment) => comment.id == commentId);
+        final comment = post.comments[0];
 
         if (commentIndex != -1) {
           final comment = post.comments[commentIndex];
@@ -175,7 +176,7 @@ class FirebasePostRepo implements PostRepo {
         }
         // update the post document with the new like list
         await postsCollection.doc(postId) .update({
-          'comments': FieldValue.arrayUnion([ post.comments[commentIndex].toJson()]),
+          'comments.$commentIndex.likes': comment.likes,
         });
       } else {
         throw Exception("Post not found");
