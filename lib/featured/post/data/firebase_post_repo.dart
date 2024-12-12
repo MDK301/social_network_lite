@@ -148,9 +148,6 @@ class FirebasePostRepo implements PostRepo {
 
       // get the post document from firestore
       final postDoc = await postsCollection.doc(postId).get();
-      print('postId: $postId'); // In giá trị của postId
-      print('commentId: $commentId'); // In giá trị của postId
-      print('postsCollection: ${postsCollection.path}'); // In đường dẫn của collection
       if (postDoc.exists) {
 
         // convert json object -> post
@@ -177,8 +174,8 @@ class FirebasePostRepo implements PostRepo {
           throw Exception("Comment not found");
         }
         // update the post document with the new like list
-        await postsCollection.doc(postId).update({
-          'comments': post.comments,
+        await postsCollection.doc(postId) .update({
+          'comments': FieldValue.arrayUnion([ post.comments[commentIndex].toJson()]),
         });
       } else {
         throw Exception("Post not found");
