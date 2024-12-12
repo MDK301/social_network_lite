@@ -368,6 +368,7 @@ class _PostTileState extends State<PostTile> {
                       // comment title UI
                       return CommentTile(
                         comment: comment,
+                        uid: widget.post.userId,
                       );
                     },
                   );

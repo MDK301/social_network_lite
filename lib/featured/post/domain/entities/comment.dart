@@ -7,6 +7,7 @@ class Comment {
   final String userName;
   final String text;
   final DateTime timestamp;
+  final List<String> likes;
 
   Comment({
     required this.id,
@@ -15,6 +16,7 @@ class Comment {
     required this.userName,
     required this.text,
     required this.timestamp,
+     this.likes=const [],
   });
 
   // convert comment -> json
@@ -26,6 +28,7 @@ class Comment {
       'userName': userName,
       'text': text,
       'timestamp': Timestamp.fromDate(timestamp),
+      'likes': likes,
     };
   }
 
@@ -38,6 +41,7 @@ class Comment {
       userName: json['userName'],
       text: json['text'],
       timestamp: (json['timestamp'] as Timestamp).toDate(),
+      likes: List<String>.from(json['likes'] ?? []),
     );
   }
 }

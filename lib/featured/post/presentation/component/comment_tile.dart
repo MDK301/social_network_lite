@@ -7,8 +7,9 @@ import 'package:social_network_lite/featured/post/presentation/cubits/post_cubit
 
 class CommentTile extends StatefulWidget {
   final Comment comment;
+  final String uid;
 
-  const CommentTile({super.key, required this.comment});
+  const CommentTile({super.key, required this.comment, required this.uid});
 
   @override
   State<CommentTile> createState() => _CommentTileState();
@@ -17,7 +18,9 @@ class CommentTile extends StatefulWidget {
 class _CommentTileState extends State<CommentTile> {
   // current user
   AppUser? currentUser;
+  bool isOwnComment = false;
   bool isOwnPost = false;
+  late final postCubit = context.read<PostCubit>();
 
   @override
   void initState() {
@@ -28,7 +31,8 @@ class _CommentTileState extends State<CommentTile> {
   void getCurrentUser() {
     final authCubit = context.read<AuthCubit>();
     currentUser = authCubit.currentUser;
-    isOwnPost = (widget.comment.userId == currentUser!.uid);
+    isOwnComment = (widget.comment.userId == currentUser!.uid);
+    isOwnPost = (widget.uid == currentUser!.uid);
   }
 
   //===========DELETE==============
@@ -60,6 +64,35 @@ class _CommentTileState extends State<CommentTile> {
     );
   }
 
+  //===========LIKE/DISLIKE==============
+  void toggleLikeComment() {
+    // current like status
+    final isLiked = widget.comment.likes.contains(currentUser!.uid);
+
+    //optimize update post after like and UI
+    setState(() {
+      if (isLiked) {
+        widget.comment.likes.remove(currentUser!.uid); //unlike
+      } else {
+        widget.comment.likes.add(currentUser!.uid); //like
+      }
+    });
+
+    // update like
+    postCubit
+        .toggleLikeComment(widget.comment.postId,widget.comment.id, currentUser!.uid)
+        .catchError((error) {
+      //co loi tra lai old value
+      setState() {
+        if (isLiked) {
+          widget.comment.likes.add(currentUser!.uid); //re-unlike
+        } else {
+          widget.comment.likes.remove(currentUser!.uid); //re-like
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -79,15 +112,43 @@ class _CommentTileState extends State<CommentTile> {
 
           const Spacer(),
 
-          if (isOwnPost)
+          if (isOwnComment ||isOwnPost)
             GestureDetector(
               onTap: showOptions,
               child: Icon(
                 Icons.more_horiz,
                 color: Theme.of(context).colorScheme.primary,
               ),
-            )
+            ),
+
+          GestureDetector(
+            onTap: toggleLikeComment,
+            child: Icon(
+              //Chon icon
+              widget.comment.likes.contains(currentUser!.uid)
+                  ? Icons.favorite
+                  : Icons.favorite_border,
+              //custom mau theo tinh trang
+              color: widget.comment.likes.contains(currentUser!.uid)
+                  ? Colors.red
+                  : Theme.of(context).colorScheme.primary,
+            ),
+          ),
+
+          SizedBox(
+            width: 5,
+          ),
+
+          //like count
+          Text(
+            widget.comment.likes.length.toString(),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontSize: 12,
+            ),
+          ),
         ],
+
       ),
     );
   }

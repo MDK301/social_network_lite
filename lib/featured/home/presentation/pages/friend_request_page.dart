@@ -11,6 +11,7 @@ class FriendRequestPage extends StatefulWidget {
   State<FriendRequestPage> createState() => _FriendRequestPageState();
 }
 
+
 Future<void> reject(String currentUid, String targetUid) async {
   try {
     // Get reference to the target user's document
@@ -65,7 +66,10 @@ Future<void> accept (String currentUid, String targetUid) async {
     print('Lỗi khi chấp thuận yêu cầu kết bạn: $e');
   }
 }
+
+
 class _FriendRequestPageState extends State<FriendRequestPage> {
+  
   final List<ProfileUser> requestList=[];
   Future<void> getRequestList(ProfileUser user) async {
     try {
@@ -98,10 +102,12 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
     getRequestList(widget.user);
     super.initState();
   }
+  
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(title: Text("F R I E N D  R E Q U E S T  L I S T"),),
       body: Column(
         children: [
           Expanded(
