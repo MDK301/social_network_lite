@@ -79,13 +79,6 @@ class PostCubit extends Cubit<PostState> {
   }
 
   // toggle like on a comment
-  Future<void> toggleLikeComment(String postId,String commentId, String userId) async {
-    try {
-      await postRepo.toggleLikeComment(postId, commentId, userId);
-    } catch (e) {
-      emit(PostsError("Failed to toggle like: $e"));
-    }
-  }
 
   // add a comment to a post
   Future<void> addComment(String postId, Comment comment) async {

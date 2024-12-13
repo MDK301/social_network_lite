@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart';
@@ -66,33 +67,104 @@ class _CommentTileState extends State<CommentTile> {
   }
 
   //===========LIKE/DISLIKE==============
-  void toggleLikeComment() {
-    // current like status
+  // void toggleLikeComment() {
+  //   // current like status or not
+  //   final isLiked = widget.comment.likes.contains(currentUser!.uid);
+  //
+  //   //optimize update post after like and UI
+  //   setState(() {
+  //     if (isLiked) {
+  //       widget.comment.likes.remove(currentUser!.uid); //unlike
+  //     } else {
+  //       widget.comment.likes.add(currentUser!.uid); //like
+  //     }
+  //   });
+  //
+  //   // update like
+  //   postCubit
+  //       .toggleLikeComment(widget.comment.postId,widget.comment.id, currentUser!.uid)
+  //       .catchError((error) {
+  //     //co loi tra lai old value
+  //     setState() {
+  //       if (isLiked) {
+  //         widget.comment.likes.add(currentUser!.uid); //re-unlike
+  //       } else {
+  //         widget.comment.likes.remove(currentUser!.uid); //re-like
+  //       }
+  //     }
+  //   });
+  // }
+
+  void toggleLikeComment() async {
+    // Tham chiếu đến Firestore
+    final firestore = FirebaseFirestore.instance;
+
+    // Kiểm tra trạng thái "đã thích" hiện tại
     final isLiked = widget.comment.likes.contains(currentUser!.uid);
 
-    //optimize update post after like and UI
-    setState(() {
-      if (isLiked) {
-        widget.comment.likes.remove(currentUser!.uid); //unlike
-      } else {
-        widget.comment.likes.add(currentUser!.uid); //like
-      }
-    });
-
-    // update like
-    postCubit
-        .toggleLikeComment(widget.comment.postId,widget.comment.id, currentUser!.uid)
-        .catchError((error) {
-      //co loi tra lai old value
-      setState() {
+    try {
+      // **Cập nhật giao diện người dùng trước (Optimistic UI)**
+      setState(() {
         if (isLiked) {
-          widget.comment.likes.add(currentUser!.uid); //re-unlike
+          widget.comment.likes.remove(currentUser!.uid); // Bỏ thích
         } else {
-          widget.comment.likes.remove(currentUser!.uid); //re-like
+          widget.comment.likes.add(currentUser!.uid); // Thích
         }
-      }
-    });
+      });
+
+      // **Lấy tài liệu bài đăng từ Firestore**
+      final postDocRef = firestore.collection('posts').doc(widget.comment.postId);
+
+      // **Chạy transaction để đảm bảo cập nhật an toàn**
+      await firestore.runTransaction((transaction) async {
+        final snapshot = await transaction.get(postDocRef);
+
+        if (!snapshot.exists) {
+          throw Exception("Bài đăng không tồn tại");
+        }
+
+        List comments = snapshot.get('comments') as List;
+
+        // **Tìm vị trí của comment trong mảng**
+        int commentIndex = comments.indexWhere((c) => c['id'] == widget.comment.id);
+        if (commentIndex == -1) {
+          throw Exception("Bình luận không tồn tại");
+        }
+
+        // **Cập nhật mảng likes của bình luận**
+        final updatedLikes = List<String>.from(comments[commentIndex]['likes']);
+        if (isLiked) {
+          updatedLikes.remove(currentUser!.uid); // Unlike
+        } else {
+          updatedLikes.add(currentUser!.uid); // Like
+        }
+
+
+        // **Thay đổi mảng comments với giá trị mới**
+        comments[commentIndex]['likes'] = updatedLikes;
+
+        // **Ghi lại mảng comments đã sửa vào Firestore**
+        transaction.update(postDocRef, {'comments': comments});
+      });
+    } catch (error) {
+      // **Quay lại giao diện cũ nếu có lỗi**
+      setState(() {
+        if (isLiked) {
+          widget.comment.likes.add(currentUser!.uid); // Thêm lại thích
+        } else {
+          widget.comment.likes.remove(currentUser!.uid); // Bỏ lại không thích
+        }
+      });
+
+      // **Hiển thị thông báo lỗi**
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Không thể cập nhật trạng thái thích: $error'),
+        ),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {

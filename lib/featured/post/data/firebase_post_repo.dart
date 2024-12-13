@@ -142,48 +142,4 @@ class FirebasePostRepo implements PostRepo {
     }
   }
 
-  @override
-  Future<void> toggleLikeComment(String postId,String commentId, String userId) async{
-    try{
-
-      // get the post document from firestore
-      final postDoc = await postsCollection.doc(postId).get();
-      if (postDoc.exists) {
-
-        // convert json object -> post
-        final post = Post.fromJson(postDoc.data() as Map<String, dynamic>);
-        // Find the comment by commentId
-        final commentIndex = post.comments.indexWhere((comment) => comment.id == commentId);
-
-        if (commentIndex != -1) {
-          final comment = post.comments[commentIndex];
-          // Check if the user has already liked this comment
-          final hasLiked = comment.likes.contains(userId);
-
-          if (hasLiked) {
-            comment.likes.remove(userId); // Unlike
-            print('userId: $userId'); // In giá trị của postId
-
-          } else {
-            comment.likes.add(userId); // Like
-          }
-          // Update the comments array in the post document
-          post.comments[commentIndex] = comment;
-          // update the post document with the new like list
-          await postsCollection.doc(postId) .update({
-            'comments': comment.likes,
-          });
-        }else {
-          throw Exception("Comment not found");
-        }
-
-      } else {
-        throw Exception("Post not found");
-
-      }
-
-    }catch(e){
-      throw Exception("error toggling like: $e");
-    }
-  }
 }
