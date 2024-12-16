@@ -17,10 +17,16 @@ Future<void> reject(String currentUid, String targetUid) async {
     // Get reference to the target user's document
     final targetUserDoc =
     FirebaseFirestore.instance.collection('users').doc(targetUid);
+    // Get reference to the my user's document
+    final currentUserDoc =
+    FirebaseFirestore.instance.collection('users').doc(currentUid);
 
     // Run Firestore transaction to remove currentUid from friendRequest
     await FirebaseFirestore.instance.runTransaction((transaction) async {
       // Remove currentUid from 'friendRequest' array
+      transaction.update(currentUserDoc, {
+        'friendRequest': FieldValue.arrayRemove([targetUid]),
+      });
       transaction.update(targetUserDoc, {
         'friendRequest': FieldValue.arrayRemove([currentUid]),
       });
@@ -57,7 +63,9 @@ Future<void> accept (String currentUid, String targetUid) async {
       transaction.update(targetUserDoc, {
         'friendRequest': FieldValue.arrayRemove([currentUid]),
       });
-
+      transaction.update(currentUserDoc, {
+        'friendRequest': FieldValue.arrayRemove([targetUid]),
+      });
 
     });
 
@@ -149,29 +157,29 @@ class _FriendRequestPageState extends State<FriendRequestPage> {
                             actions: <Widget>[
                               TextButton(
                                 child: Text('No'),
-                                onPressed: () {
+                                onPressed: () async {
                                   Navigator.of(context).pop(); // Close the dialog
                                   // Execute command for "No"
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text('Đã Xóa Lời Mời Kết Bạn')),
                                   );
                                   // ... your code here ...
-                                  reject(widget.user.uid, requestList[index].uid);
-                                  getRequestList(widget.user);
+                                  await reject(widget.user.uid, requestList[index].uid);
+                                  await getRequestList(widget.user);
 
                                 },
                               ),
                               TextButton(
                                 child: Text('Yes'),
-                                onPressed: () {
+                                onPressed: () async{
                                   Navigator.of(context).pop(); // Close the dialog
                                   // Execute command for "Yes"
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text('Đã Chấp Nhận Lời Mời Kết Bạn')),
                                   );
                                   // ... your code here ...
-                                  accept(widget.user.uid, requestList[index].uid);
-                                  getRequestList(widget.user);
+                                  await accept(widget.user.uid, requestList[index].uid);
+                                  await getRequestList(widget.user);
 
                                 },
                               ),

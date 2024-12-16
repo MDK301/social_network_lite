@@ -19,6 +19,7 @@ class _FriendListPageState extends State<FriendListPage> {
   late AppUser? currentUser = authCubit.currentUser;
 
   final List<ProfileUser> friendList=[];
+
   Future<void> getFriendList(String uid) async {
     try {
       // Get the current user's document using the user's UID
@@ -54,17 +55,19 @@ class _FriendListPageState extends State<FriendListPage> {
     return Scaffold(
       appBar: AppBar(title: Text("F R I E N D  L I S T"),),
       body: Column(
-        children: [
+        children:  [
           Expanded(
-            child:ListView.builder(
+            child:friendList.isNotEmpty ?
+            ListView.builder(
               itemCount: friendList.length,
               itemBuilder: (context, index) {
+                
                 //get indivitual chat UwU~
 
                 // image
                 return Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: friendList[index] != null ?
+                    child:
                     ListTile(
                         title:  Text(friendList[index].name),
                         subtitle: Text(friendList[index].email),
@@ -96,10 +99,10 @@ class _FriendListPageState extends State<FriendListPage> {
                           );
 
                         }
-                    ) : Container(child: CircularProgressIndicator(),)
+                    )
                 );
               },
-            ),
+            ):  Container(child: Text("Chua co ban! Hay them ban vao"),)
 
           ),
         ],

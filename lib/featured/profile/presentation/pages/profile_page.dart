@@ -103,7 +103,7 @@ class _ProfilePageState extends State<ProfilePage> {
         // Get the list of friend IDs from current user's friendlist
         List<dynamic> currentFriendList =
             currentUserSnapshot.data()?['friendlist'] ?? [];
-        print(currentFriendList[0]);
+        // print(currentFriendList[0]);
 
         // Check if targetUid is already in current user's friendlist
         if (currentFriendList.contains(targetUid)||currentFriendList.contains(currentUid)) {
@@ -120,7 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
         }
       }
     } catch (e) {
-      print('Lỗi khi lấy danh sách bạn bè: $e');
+      print('Lỗi khi lấy danh sách bạn bè1: $e');
     }
   }
 
@@ -154,7 +154,7 @@ class _ProfilePageState extends State<ProfilePage> {
         }
 
     } catch (e) {
-      print('Lỗi khi lấy danh sách bạn bè: $e');
+      print('Lỗi khi lấy danh sách bạn bè2: $e');
     }
   }
 
