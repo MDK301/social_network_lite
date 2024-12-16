@@ -34,7 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
   // cubits
   late final authCubit = context.read<AuthCubit>();
   late final profileCubit = context.read<ProfileCubit>();
-
+  late bool isfriend=false;
   // current user
   late AppUser? currentUser = authCubit.currentUser;
 
@@ -46,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     // load user profile data
-
+    isFriend(currentUser!.uid,widget.uid);
     profileCubit.fetchUserProfile(widget.uid);
   }
 
@@ -103,9 +103,10 @@ class _ProfilePageState extends State<ProfilePage> {
         // Get the list of friend IDs from current user's friendlist
         List<dynamic> currentFriendList =
             currentUserSnapshot.data()?['friendlist'] ?? [];
+        print(currentFriendList[0]);
 
         // Check if targetUid is already in current user's friendlist
-        if (currentFriendList.contains(targetUid)) {
+        if (currentFriendList.contains(targetUid)||currentFriendList.contains(currentUid)) {
           print('Bạn đã là bạn bè với người này.');
           return; // Không làm gì nếu đã là bạn bè
         } else {
@@ -118,6 +119,40 @@ class _ProfilePageState extends State<ProfilePage> {
           });
         }
       }
+    } catch (e) {
+      print('Lỗi khi lấy danh sách bạn bè: $e');
+    }
+  }
+
+  //checkfriend
+  Future<void> isFriend(String currentUid, String targetUid) async {
+    try {
+      // Get references to the target user's documents
+
+      final targetUserDoc =
+      FirebaseFirestore.instance.collection('users').doc(targetUid);
+
+      // Get the current user's friendlist
+      final currentUserSnapshot = await targetUserDoc.get();
+
+
+        // Get the list of friend IDs from current user's friendlist
+        List<dynamic> currentFriendList =
+            currentUserSnapshot.data()?['friendlist'] ?? [];
+        // Check if targetUid is already in current user's friendlist
+        if (currentFriendList.contains(targetUid)||currentFriendList.contains(currentUid)) {
+          print('Bạn đã là bạn bè với người này.');
+          setState(() {
+            isfriend=true;
+          });
+
+        } else {
+          // Update friendRequest and friendList fields
+          setState(() {
+            isfriend=false;
+          });
+        }
+
     } catch (e) {
       print('Lỗi khi lấy danh sách bạn bè: $e');
     }
@@ -194,19 +229,22 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 //add friend
                 if (!isOwnPost)
-                  IconButton(
-                    onPressed: () async {
-                      try {
-                        // Gọi hàm lấy danh sách bạn bè và yêu cầu kết bạn
-                        await addfriend(currentUser!.uid, user.uid);
-                      } catch (e) {
-                        print('Lỗi khi lấy danh sách bạn bè: $e');
-                      }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Đã Gửi Lời Mời Kết Bạn')),
-                      );
-                    },
-                    icon: const Icon(Icons.person_add_rounded),
+                  SizedBox(
+                    child:  (!isfriend)?
+                      IconButton(
+                      onPressed: () async {
+                        try {
+                          // Gọi hàm lấy danh sách bạn bè và yêu cầu kết bạn
+                          await addfriend(currentUser!.uid, user.uid);
+                        } catch (e) {
+                          print('Lỗi khi lấy danh sách bạn bè: $e');
+                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Đã Gửi Lời Mời Kết Bạn')),
+                        );
+                      },
+                      icon: const Icon(Icons.person_add_rounded),
+                    ): Container()
                   )
               ],
             ),
