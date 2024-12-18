@@ -43,7 +43,11 @@ class _ChatPageState extends State<ChatPage> {
       firebaseChatRepo.sendMessenger(widget.chatDocId, message);
       _message.clear();
     } else {
-
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Tin nhắn rỗng, vui lòng nhập vào.'),
+        ),
+      );
       print("enter Text");
     }
   }
@@ -126,18 +130,9 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                     ),
                     IconButton(
-                      onPressed: _message.text.isNotEmpty
-                          ?
-                      onSendMessage
-                          :
-                          () {
-                        // Show a snackbar or toast message
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Tin nhắn rỗng, vui lòng nhập vào.'),
-                          ),
-                        );
-                      },
+                      onPressed:
+                      onSendMessage,
+
                       icon: Icon(Icons.send),
                     )
                   ],
