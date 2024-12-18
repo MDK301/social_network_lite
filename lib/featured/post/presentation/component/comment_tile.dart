@@ -141,7 +141,7 @@ class _CommentTileState extends State<CommentTile> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 30.0),
       child: Row(
         children: [
           // name
@@ -153,7 +153,8 @@ class _CommentTileState extends State<CommentTile> {
           ),
 
           // comment text
-          Text(widget.comment.text),
+          Container(width: 200,
+              child: Text(widget.comment.text,softWrap: true,)),
 
           const Spacer(),
 
