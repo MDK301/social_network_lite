@@ -1,4 +1,3 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -143,8 +142,13 @@ class _PostTileState extends State<PostTile> {
           // save button
           TextButton(
             onPressed: () {
-              addComment();
-              Navigator.of(context).pop();
+              if (commentTextController.text.isNotEmpty) {
+                addComment();
+                Navigator.of(context).pop();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("Please fill the gap before saving.")));
+              }
             },
             child: const Text("Save"),
           )
@@ -186,7 +190,9 @@ class _PostTileState extends State<PostTile> {
           //topsection
           GestureDetector(
             onTap: () {
-              Navigator.push(context,MaterialPageRoute(
+              Navigator.push(
+                context,
+                MaterialPageRoute(
                   builder: (context) => ProfilePage(
                     uid: widget.post.userId,
                   ),

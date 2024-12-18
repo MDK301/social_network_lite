@@ -66,34 +66,6 @@ class _CommentTileState extends State<CommentTile> {
     );
   }
 
-  //===========LIKE/DISLIKE==============
-  // void toggleLikeComment() {
-  //   // current like status or not
-  //   final isLiked = widget.comment.likes.contains(currentUser!.uid);
-  //
-  //   //optimize update post after like and UI
-  //   setState(() {
-  //     if (isLiked) {
-  //       widget.comment.likes.remove(currentUser!.uid); //unlike
-  //     } else {
-  //       widget.comment.likes.add(currentUser!.uid); //like
-  //     }
-  //   });
-  //
-  //   // update like
-  //   postCubit
-  //       .toggleLikeComment(widget.comment.postId,widget.comment.id, currentUser!.uid)
-  //       .catchError((error) {
-  //     //co loi tra lai old value
-  //     setState() {
-  //       if (isLiked) {
-  //         widget.comment.likes.add(currentUser!.uid); //re-unlike
-  //       } else {
-  //         widget.comment.likes.remove(currentUser!.uid); //re-like
-  //       }
-  //     }
-  //   });
-  // }
 
   void toggleLikeComment() async {
     // Tham chiếu đến Firestore
