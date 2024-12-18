@@ -3,13 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/presentation/cubits/auth_cubit.dart';
 import 'package:social_network_lite/featured/chat/presentation/component/chat_tile.dart';
-import 'package:social_network_lite/featured/chat/presentation/cubits/chat_cubit.dart';
-import 'package:social_network_lite/featured/chat/presentation/cubits/chat_states.dart';
 
 import '../../../auth/domain/entities/app_user.dart';
-import '../../../profile/presentation/cubits/profile_cubit.dart';
 import '../../domain/entities/chat.dart';
-import '../../domain/entities/messenger.dart';
 
 class AllChatPage extends StatefulWidget {
   final String uid;
@@ -50,7 +46,7 @@ class _AllChatPageState extends State<AllChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_chat != '') {
+    if (_chat.isNotEmpty) {
       return Scaffold(
       appBar: AppBar(title: Text("Y O U R  C H A T S"),),
       body: Column(
@@ -80,10 +76,13 @@ class _AllChatPageState extends State<AllChatPage> {
       ),
     );
     } else {
-      return const SizedBox(
-          height: 12,
-          width: 12,
-          child: CircularProgressIndicator());
+      return Container(
+        color: Colors.white,
+        child: const SizedBox(
+            height: 12,
+            width: 12,
+            child: CircularProgressIndicator()),
+      );
     }
   }
 }

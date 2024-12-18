@@ -36,12 +36,12 @@ class _ChatTileState extends State<ChatTile> {
         return profileuser;
       } else {
         // Xử lý trường hợp tài liệu ngườidùng không tồn tại
-        print('Tài liệu người dùng không tìm thấy cho uid: $uid');
+        // print('Tài liệu người dùng không tìm thấy cho uid: $uid');
         return null;
       }
     } catch (e) {
       // Xử lý lỗi
-      print('Lỗi khi lấy thông tin người dùng: $e');
+      // print('Lỗi khi lấy thông tin người dùng: $e');
       return null;
     }
   }
@@ -73,7 +73,7 @@ class _ChatTileState extends State<ChatTile> {
       } else {
         return 'Vừa xong';
       }
-    };
+    }
 
 
 
@@ -119,11 +119,12 @@ class _ChatTileState extends State<ChatTile> {
                             }
                           },
                         ),
+
                         trailing: timestamp != null
                             ? Text(
                                 _formatTimestamp(timestamp),
                                 style:
-                                    TextStyle(fontSize: 12, color: Colors.grey),
+                                    const TextStyle(fontSize: 12, color: Colors.grey),
                               )
                             : null,
 
@@ -146,7 +147,7 @@ class _ChatTileState extends State<ChatTile> {
                             builder: (context) => ChatPage(
                               myId: widget.curUid,
                               friendId: profileuser!.uid,
-                              friendName: profileuser!.name,
+                              friendName: profileuser.name,
                               chatDocId: widget.chat.id,
                             ),
                           ),
@@ -154,11 +155,11 @@ class _ChatTileState extends State<ChatTile> {
                       ),
                     );
                   } else {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   }
                 });
           } else {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
         });
   }

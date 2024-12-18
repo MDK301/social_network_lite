@@ -99,8 +99,6 @@ class MyApp extends StatelessWidget {
 
                   // loading..
                   else {
-                    print("authState");
-                    print(authState);
 
                     return const Scaffold(
                       body: Center(

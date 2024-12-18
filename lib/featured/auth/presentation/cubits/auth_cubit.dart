@@ -19,11 +19,10 @@ class AuthCubit extends Cubit<AuthState> {
     final AppUser? user = await authRepo.getCurrentUser();
 
     if (user != null) {
-      print("toi da dang nhap va dang trong ham checkAuth");
       _currentUser = user;
       emit(Authenticated(user));
     } else {
-      print("toi chua dang nhap va dang trong ham checkAuth");
+      // print("toi chua dang nhap va dang trong ham checkAuth");
 
       emit(Unauthenticated());
     }
@@ -39,16 +38,16 @@ class AuthCubit extends Cubit<AuthState> {
       final user = await authRepo.loginWithEmailPassword(email, pw);
 
       if (user != null) {
-        print("inif1");
+        // print("inif1");
         _currentUser = user;
         emit(Authenticated(user));
       } else {
-        print("inif2");
+        // print("inif2");
 
         emit(Unauthenticated());
       }
     } catch (e) {
-      print("catch error");
+      // print("catch error");
       emit(AuthError(e.toString()));
       emit(Unauthenticated());
     }

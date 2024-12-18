@@ -32,14 +32,14 @@ class FirebaseChatRepo implements ChatRepo {
 
       // Cập nhật các trường trong tài liệu
       if(messenger.msgDocumentUrl !=null && messenger.msgImageUrl !=null && messenger.msg!=null){
-        final lastMessenger='Một tin nhắn + file + ảnh khác ';
+        const lastMessenger='Một tin nhắn + file + ảnh khác ';
         await chatRef.update({
           'lastMessenger': lastMessenger,
           'sender': messenger.senderId,
           'lastMessengerTime': FieldValue.serverTimestamp(), // Thời gian từ server Firebase
         });
       }else if(messenger.msgDocumentUrl !=null || messenger.msgImageUrl !=null ){
-        final lastMessenger='Đã gửi một tệp tin';
+        const lastMessenger='Đã gửi một tệp tin';
         await chatRef.update({
           'lastMessenger': lastMessenger,
           'sender': messenger.senderId,
@@ -57,9 +57,9 @@ class FirebaseChatRepo implements ChatRepo {
       await docRef.update({
         'id': docRef.id, // Gán ID vừa tạo vào trường 'id'
       });
-      print('Messenger added successfully!');
+      // print('Messenger added successfully!');
     } catch (e) {
-      print('Error adding messenger: $e');
+      // print('Error adding messenger: $e');
       throw Exception('Failed to add messenger');
     }
   }
@@ -81,14 +81,16 @@ class FirebaseChatRepo implements ChatRepo {
       }
       if (existingChat != null) {
         // Nếu đã tồn tại, trả về thông tin chat
-        print("Chat already exists with ID: ${existingChat.id}");
+        // print("Chat already exists with ID: ${existingChat.id}");
         return Chat(
           id: existingChat.id,
           lastMessengerTime: (existingChat['lastMessengerTime'] as Timestamp).toDate(),
           participate: List<String>.from(existingChat['participate']),
         );
       } else {
+
         // Nếu không tồn tại, tạo tài liệu mới
+
         // Generate a new document ID
         DocumentReference docRef = chatsCollection.doc();
 
@@ -101,17 +103,29 @@ class FirebaseChatRepo implements ChatRepo {
           'lastMessenger': '',
           'lastMessengerTime': currentTimestamp,
           'participate': [uid1, uid2],
+          'sender':uid1,
           'unread': [uid1, uid2],
         });
 
-        print("Chat created successfully with ID: ${docRef.id}");
+        // Tạo tham chiếu đến collection `messenger`
+        CollectionReference chatCollection =
+        chatsCollection.doc(docRef.id).collection('messenger');
+        // Chuyển đổi Messenger sang JSON và thêm vào Firestore
+        final chatRef = await chatCollection.doc();
+        await chatRef.set({
+          'id': docRef.id,
+          'senderId': [uid1],
+          'createOn': Timestamp.now,
+        }) ;
+
+        // print("Chat created successfully with ID: ${docRef.id}");
         return Chat(
             id: docRef.id,
             lastMessengerTime: Timestamp.now().toDate(),
             participate: [uid1, uid2]);
       }
     } catch (e) {
-      print("Error creating chat: $e");
+      // print("Error creating chat: $e");
       return null;
     }
   }
@@ -119,8 +133,8 @@ class FirebaseChatRepo implements ChatRepo {
   @override
   Future<List<Messenger>> fetchAllMessengers(String chatId) async {
     try {
-      print("fetchAllMessengers-firebase");
-      print("intry");
+      // print("fetchAllMessengers-firebase");
+      // print("intry");
       // get all posts with most recent posts at the top
       final chatsSnapshot = await chatsCollection
           .orderBy('createOn', descending: true)
@@ -130,13 +144,13 @@ class FirebaseChatRepo implements ChatRepo {
       final List<Messenger> allMessengers = chatsSnapshot.docs
           .map((doc) => Messenger.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
-      print("fetchAllMessengers-firebase-allMessengers lay dc");
-      print(allMessengers);
+      // print("fetchAllMessengers-firebase-allMessengers lay dc");
+      // print(allMessengers);
       return allMessengers;
 
     } catch (e) {
-      print("fetchAllMessengers-firebase");
-      print("incatch");
+      // print("fetchAllMessengers-firebase");
+      // print("incatch");
       throw Exception("Error fetching posts: $e");
     }
   }
@@ -144,8 +158,8 @@ class FirebaseChatRepo implements ChatRepo {
   @override
   Future<List<Chat>> fetchChatsByUserId(String userId) async {
     try {
-      print("====================fetchChatsByUserId firebase========================");
-      print(userId);
+      // print("====================fetchChatsByUserId firebase========================");
+      // print(userId);
       // get all posts with most recent posts at the top
       final chatsSnapshot = await chatsCollection
           .where('participate', arrayContains: userId)

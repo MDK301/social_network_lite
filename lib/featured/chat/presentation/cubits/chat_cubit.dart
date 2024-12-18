@@ -18,33 +18,33 @@ class ChatCubit extends Cubit<ChatStates> {
   // fetch all messengers
   Future<void> fetchAllMessengers(String chatId) async {
     try {
-      print("fetchAllMessengers");
-      print("intry");
+      // print("fetchAllMessengers");
+      // print("intry");
       emit(MessengerLoading());
       final messengers = await chatRepo.fetchAllMessengers(chatId);
-      print("fetchAllMessengers");
-      print("intry-qua final");
+      // print("fetchAllMessengers");
+      // print("intry-qua final");
       emit(MessengerLoaded(messengers));
     } catch (e) {
       emit(MessengerError("Failed to fetch chats: $e"));
-      print("fetchAllMessengers");
-      print("incatch");
+      // print("fetchAllMessengers");
+      // print("incatch");
     }
   }
   // fetch all chats
   Future<void> fetchChatsByUserId(String userId) async {
     try {
-      print("fetchChatsByUserId-cubit");
-      print("intry");
+      // print("fetchChatsByUserId-cubit");
+      // print("intry");
       emit(ChatLoading());
       final chats = await chatRepo.fetchChatsByUserId(userId);
-      print("fetchChatsByUserId-cubit");
-      print("intry-qua final");
+      // print("fetchChatsByUserId-cubit");
+      // print("intry-qua final");
       emit(AllChatLoaded(chats));
     } catch (e) {
       emit(ChatError("Failed to fetch chats: $e"));
-      print("fetchChatsByUserId-cubit");
-      print("incatch cubit");
+      // print("fetchChatsByUserId-cubit");
+      // print("incatch cubit");
     }
   }
 
@@ -78,7 +78,7 @@ class ChatCubit extends Cubit<ChatStates> {
      return null;
 
    }
-   return null;
+
   }
 
 
