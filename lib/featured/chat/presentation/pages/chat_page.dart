@@ -1,9 +1,14 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/firebase_chat_repo.dart';
 import '../../domain/entities/messenger.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatPage extends StatefulWidget {
   final String myId;
@@ -23,33 +28,77 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  final ImagePicker _picker = ImagePicker();
   final TextEditingController _message = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final TextEditingController _messageController = TextEditingController();
 
-  void onSendMessage() async {
-    if (_message.text.isNotEmpty) {
-      Messenger message = Messenger(
-        id: '',
-        senderId: widget.myId,
-        msg: _message.text,
-        createOn: DateTime.now(),
-      );
+  void onSendMessage(String content, String type, [String? imageUrl]) async {
+    if (_message.text.isNotEmpty || (content.trim() != '')) {
+      // Messenger message = Messenger(
+      //   id: '',
+      //   senderId: widget.myId,
+      //   msg: _message.text,
+      //   createOn: DateTime.now(),
+      // );
+      //
+      // final firebaseChatRepo =
+      //     FirebaseChatRepo(); // Hoặc truy cập instance hiện có
+      // firebaseChatRepo.sendMessenger(widget.chatDocId, message);
+      // _message.clear();
 
-      final firebaseChatRepo =
-          FirebaseChatRepo(); // Hoặc truy cập instance hiện có
-      firebaseChatRepo.sendMessenger(widget.chatDocId, message);
-      _message.clear();
+      _sendTextMessage(content, type, imageUrl);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Tin nhắn rỗng, vui lòng nhập vào.'),
         ),
       );
       print("enter Text");
     }
+  }
+
+  void _sendTextMessage(String content, String type, [String? imageUrl]) {
+    // ... (phần còn lại của hàm _sendTextMessage)
+
+    Messenger message = Messenger(
+        id: '',
+        senderId: widget.myId,
+        msg: _message.text,
+        msgImageUrl: imageUrl,
+        createOn: DateTime.now());
+
+    final firebaseChatRepo =
+        FirebaseChatRepo(); // Hoặc truy cập instance hiện có
+    firebaseChatRepo.sendMessenger(widget.chatDocId, message);
+    _message.clear();
+  }
+
+  Future<void> _chonAnh() async {
+    final XFile? pickedImage =
+        await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedImage != null) {
+      // Tải ảnh lên Firebase Storage (xem bước 4)
+      String imageUrl = await _taiAnhLen(pickedImage.path);
+
+      // Gửi tin nhắn với URL ảnh
+      onSendMessage(_messageController.text, 'image', imageUrl);
+      _messageController.clear();
+    }
+  }
+
+  Future<String> _taiAnhLen(String imagePath) async {
+    final Reference storageReference = FirebaseStorage.instance
+        .ref()
+        .child('chat_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+
+    final UploadTask uploadTask = storageReference.putFile(File(imagePath));
+    await uploadTask.whenComplete(() {});
+
+    final String downloadUrl = await storageReference.getDownloadURL();
+    return downloadUrl;
   }
 
   @override
@@ -112,8 +161,12 @@ class _ChatPageState extends State<ChatPage> {
                 width: size.width / 1.1,
                 child: Row(
                   children: [
+                    IconButton(
+                      onPressed: _chonAnh,
+                      icon: Icon(Icons.image),
+                    ),
                     Container(
-                      height: size.height / 17,
+                      height: size.height / 15,
                       width: size.width / 1.3,
                       child: TextField(
                         controller: _message,
@@ -130,9 +183,8 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                     ),
                     IconButton(
-                      onPressed:
-                      onSendMessage,
-
+                      onPressed: () =>
+                          onSendMessage(_messageController.text, 'text'),
                       icon: Icon(Icons.send),
                     )
                   ],
@@ -152,34 +204,39 @@ class _ChatPageState extends State<ChatPage> {
           ? Alignment.centerLeft
           : Alignment.centerRight,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-        decoration: BoxDecoration(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+          margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+          decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(25),
-            color:
-          map["senderId"] != widget.myId
-        ? Theme.of(context).colorScheme.inversePrimary
-          : Theme.of(context).colorScheme.primary,
-        ),
-        child: Column(children: [
-          (map["msg"] != null)
-              ? Text(
-            map["msg"]
-            // map['sendBy']
-            ,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: map["senderId"] != widget.myId
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.inversePrimary,
-            ),
-          )
-              : const Text('Loading...'),
-        ],)
-
-
-      ),
+            color: map["senderId"] != widget.myId
+                ? Theme.of(context).colorScheme.inversePrimary
+                : Theme.of(context).colorScheme.primary,
+          ),
+          child: Column(
+            children: [
+              (map["msg"] != null || map["msgImageUrl"] != null)
+                  ? Column(
+                      children: [
+                        (map["msgImageUrl"] != null)
+                            ? CachedNetworkImage(imageUrl: map["msgImageUrl"])
+                            : Text(
+                                map["msg"],
+                                //STYLE OF MSG
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: map["senderId"] != widget.myId
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .inversePrimary,
+                                ),
+                              ),
+                      ],
+                    )
+                  : const Text('Loading...'),
+            ],
+          )),
     );
   }
 }
