@@ -50,3 +50,8 @@ android {
         minSdkVersion 23
     }
 }
+dependencies {
+    implementation "io.flutter.embedding.android:flutter_embedding_release"
+    // ... other dependencies
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0' // Thêm dòng này
+}

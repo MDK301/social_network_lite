@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +10,8 @@ import 'package:flutter/material.dart';
 import '../../data/firebase_chat_repo.dart';
 import '../../domain/entities/messenger.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:http/http.dart' as http;
 
 class ChatPage extends StatefulWidget {
   final String myId;
@@ -35,6 +38,7 @@ class _ChatPageState extends State<ChatPage> {
 
   final TextEditingController _messageController = TextEditingController();
 
+  //GUI TIN NHAN( NAY CHI LA BO LOC)
   void onSendMessage(String content, String type, [String? imageUrl]) async {
     if (_message.text.isNotEmpty || type == 'image') {
       // Messenger message = Messenger(
@@ -60,6 +64,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  //GUI TIN NHAN
   void _sendTextMessage(String content, String type, [String? imageUrl]) {
     // ... (phần còn lại của hàm _sendTextMessage)
     Messenger message = Messenger(
@@ -100,6 +105,18 @@ class _ChatPageState extends State<ChatPage> {
 
     final String downloadUrl = await storageReference.getDownloadURL();
     return downloadUrl;
+  }
+
+  //TAI ANH XUONG =))) xuong lam gi roi lai phai len~
+
+
+  Future<void> _luuAnh(String imageUrl) async {
+    var response =await http.get(Uri.parse(imageUrl));
+    final result = await ImageGallerySaver.saveImage(
+        Uint8List.fromList(response.bodyBytes),
+        quality: 80,
+        name: "image");
+    print(result);
   }
 
   @override
@@ -221,7 +238,9 @@ class _ChatPageState extends State<ChatPage> {
 
                         //Nếu hình ảnh ton tại
                         (map["msgImageUrl"] != null)
-                            ? CachedNetworkImage(imageUrl: map["msgImageUrl"])
+                            ? GestureDetector(
+                          onTap: (){_luuAnh(map["msgImageUrl"]);},
+                            child: CachedNetworkImage(imageUrl: map["msgImageUrl"]))
                             : const SizedBox(),
 
                         //Nếu tin nhan ton tai
