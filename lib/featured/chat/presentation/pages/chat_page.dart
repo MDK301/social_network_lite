@@ -36,7 +36,7 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
 
   void onSendMessage(String content, String type, [String? imageUrl]) async {
-    if (_message.text.isNotEmpty || (content.trim() != '')) {
+    if (_message.text.isNotEmpty || type == 'image') {
       // Messenger message = Messenger(
       //   id: '',
       //   senderId: widget.myId,
@@ -62,7 +62,6 @@ class _ChatPageState extends State<ChatPage> {
 
   void _sendTextMessage(String content, String type, [String? imageUrl]) {
     // ... (phần còn lại của hàm _sendTextMessage)
-
     Messenger message = Messenger(
         id: '',
         senderId: widget.myId,
@@ -76,6 +75,7 @@ class _ChatPageState extends State<ChatPage> {
     _message.clear();
   }
 
+  //CHON ANH DE TAI LEN
   Future<void> _chonAnh() async {
     final XFile? pickedImage =
         await _picker.pickImage(source: ImageSource.gallery);
@@ -89,6 +89,7 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  //TAI ANH LEN KHI CHON ANH
   Future<String> _taiAnhLen(String imagePath) async {
     final Reference storageReference = FirebaseStorage.instance
         .ref()
@@ -165,9 +166,9 @@ class _ChatPageState extends State<ChatPage> {
                       onPressed: _chonAnh,
                       icon: Icon(Icons.image),
                     ),
-                    Container(
-                      height: size.height / 15,
-                      width: size.width / 1.3,
+                    Flexible(
+                      // height: size.height / 15,
+                      // width: size.width / 1.3,
                       child: TextField(
                         controller: _message,
                         maxLines: null, //cho phep xuong dong
@@ -217,9 +218,15 @@ class _ChatPageState extends State<ChatPage> {
               (map["msg"] != null || map["msgImageUrl"] != null)
                   ? Column(
                       children: [
+
+                        //Nếu hình ảnh ton tại
                         (map["msgImageUrl"] != null)
                             ? CachedNetworkImage(imageUrl: map["msgImageUrl"])
-                            : Text(
+                            : const SizedBox(),
+
+                        //Nếu tin nhan ton tai
+                        (map["msg"] != null)
+                            ? Text(
                                 map["msg"],
                                 //STYLE OF MSG
                                 style: TextStyle(
@@ -231,7 +238,8 @@ class _ChatPageState extends State<ChatPage> {
                                           .colorScheme
                                           .inversePrimary,
                                 ),
-                              ),
+                              )
+                            : const SizedBox(),
                       ],
                     )
                   : const Text('Loading...'),
