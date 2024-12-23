@@ -122,7 +122,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    ImageGallerySaver.saveImage(Uint8List.fromList([])); //
+    // ImageGallerySaver.saveImage(Uint8List.fromList([]));
     // Khởi tạo các listener và xử lý ban đầu
   }
 
