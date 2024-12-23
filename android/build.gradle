@@ -16,8 +16,3 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
-dependencies {
-    implementation("io.flutter.embedding:flutter_embedding_release")
-    implementation("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation("com.fluttercandies:image_gallery_saver:1.7.1") // This line
-}

@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import '../../data/firebase_chat_repo.dart';
 import '../../domain/entities/messenger.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:http/http.dart' as http;
 
 class ChatPage extends StatefulWidget {
@@ -111,12 +110,12 @@ class _ChatPageState extends State<ChatPage> {
 
 
   Future<void> _luuAnh(String imageUrl) async {
-    var response =await http.get(Uri.parse(imageUrl));
-    final result = await ImageGallerySaver.saveImage(
-        Uint8List.fromList(response.bodyBytes),
-        quality: 80,
-        name: "image");
-    print(result);
+    // var response =await http.get(Uri.parse(imageUrl));
+    // final result = await ImageGallerySaver.saveImage(
+    //     Uint8List.fromList(response.bodyBytes),
+    //     quality: 80,
+    //     name: "image");
+    // print(result);
   }
 
   @override
