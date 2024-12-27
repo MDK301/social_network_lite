@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
+
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -48,7 +48,7 @@ class _ChatPageState extends State<ChatPage> {
       // );
       //
       // final firebaseChatRepo =
-      //     FirebaseChatRepo(); // Hoặc truy cập instance hiện có
+      //     FirebaseChatRepo(); // hoặc truy cập instance hiện có
       // firebaseChatRepo.sendMessenger(widget.chatDocId, message);
       // _message.clear();
 
@@ -84,10 +84,10 @@ class _ChatPageState extends State<ChatPage> {
     final XFile? pickedImage =
         await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
-      // Tải ảnh lên Firebase Storage (xem bước 4)
+      // T=tải ảnh lên Firebase Storage .-.
       String imageUrl = await _taiAnhLen(pickedImage.path);
 
-      // Gửi tin nhắn với URL ảnh
+      // gửi tin nhắn với URL ảnh
       onSendMessage(_messageController.text, 'image', imageUrl);
       _messageController.clear();
     }
@@ -110,25 +110,20 @@ class _ChatPageState extends State<ChatPage> {
 
 
   Future<void> _luuAnh(String imageUrl) async {
-    // var response =await http.get(Uri.parse(imageUrl));
-    // final result = await ImageGallerySaver.saveImage(
-    //     Uint8List.fromList(response.bodyBytes),
-    //     quality: 80,
-    //     name: "image");
-    // print(result);
+
   }
 
   @override
   void initState() {
     super.initState();
     // ImageGallerySaver.saveImage(Uint8List.fromList([]));
-    // Khởi tạo các listener và xử lý ban đầu
+    // khởi tao cac listener và xử lý ban đầu
   }
 
   @override
   void dispose() {
     _messageController.dispose();
-    // Hủy bỏ các listener và xử lý dọn dẹp
+    // hủy bỏ các listener
     super.dispose();
   }
 
@@ -164,7 +159,7 @@ class _ChatPageState extends State<ChatPage> {
                           if (map != null) {
                             return messages(size, map);
                           } else {
-                            return CircularProgressIndicator(); // Or any other loading indicator
+                            return CircularProgressIndicator(); // or any other =)))
                           }
                         },
                       );
