@@ -3,7 +3,12 @@ import 'package:social_network_lite/featured/post/domain/entities/comment.dart';
 import 'package:social_network_lite/featured/post/domain/entities/post.dart';
 import 'package:social_network_lite/featured/post/domain/repos/post_repo.dart';
 
+import '../../auth/domain/entities/app_user.dart';
+
 class FirebasePostRepo implements PostRepo {
+  AppUser? currentUser;
+
+
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   // store the posts in a collection called 'posts'

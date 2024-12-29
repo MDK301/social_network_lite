@@ -30,6 +30,12 @@ class FirebaseChatRepo implements ChatRepo {
       // Tham chiếu tới document của chat
       DocumentReference chatRef = firestore.collection('chats').doc(chatId);
 
+      // Lấy tài liệu chat hiện tại
+      final chatSnapshot = await chatRef.get();
+      final data = chatSnapshot.data() as Map<String, dynamic>;
+      final List<dynamic> participate = data['participate'] ?? [];
+      final unread = participate.where((uid) => uid != messenger.senderId).toList();
+
       // Cập nhật các trường trong tài liệu
       if(messenger.msgDocumentUrl !=null && messenger.msgImageUrl !=null && messenger.msg!=null){
         const lastMessenger='Một tin nhắn + file + ảnh khác ';
@@ -37,6 +43,7 @@ class FirebaseChatRepo implements ChatRepo {
           'lastMessenger': lastMessenger,
           'sender': messenger.senderId,
           'lastMessengerTime': FieldValue.serverTimestamp(), // Thời gian từ server Firebase
+          'unread': unread,
         });
       }else if(messenger.msgDocumentUrl !=null || messenger.msgImageUrl !=null ){
         const lastMessenger='Đã gửi một tệp tin';
@@ -44,12 +51,14 @@ class FirebaseChatRepo implements ChatRepo {
           'lastMessenger': lastMessenger,
           'sender': messenger.senderId,
           'lastMessengerTime': FieldValue.serverTimestamp(), // Thời gian từ server Firebase
+          'unread': unread,
         });
       }else{
         await chatRef.update({
           'lastMessenger': messenger.msg!,
           'sender': messenger.senderId,
           'lastMessengerTime': FieldValue.serverTimestamp(), // Thời gian từ server Firebase
+          'unread': unread,
         });
       }
 

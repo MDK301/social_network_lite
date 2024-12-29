@@ -22,13 +22,10 @@ class SearchCubit extends Cubit<SearchState> {
 
       // emit(SearchLoaded(users));
       if (users == null || users.isEmpty) {
-        print("in if ");
-        print(users);
+
 
         emit(SearchError('No users found.'));
       } else {
-        print("in else ");
-        print(users);
 
         emit(SearchLoaded(users));
       }

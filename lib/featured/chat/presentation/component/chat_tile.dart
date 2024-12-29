@@ -50,6 +50,19 @@ class _ChatTileState extends State<ChatTile> {
     return chat.participate.firstWhere((uid) => uid != curUid);
   }
 
+  Future<void> _readed(String chatId, String userUid) async {
+    final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
+
+    try {
+      await chatRef.update({
+        'unread': FieldValue.arrayRemove([userUid]),
+      });
+      debugPrint('Successfully removed $userUid from unread list in $chatId');
+    } catch (e) {
+      debugPrint('Failed to remove $userUid from unread: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String otherUid = getOtherUid(widget.chat, widget.curUid);
@@ -75,8 +88,6 @@ class _ChatTileState extends State<ChatTile> {
       }
     }
 
-
-
     return StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
             .collection('chats')
@@ -89,6 +100,12 @@ class _ChatTileState extends State<ChatTile> {
             final lastMessage = chatData['lastMessenger'] as String?;
             final senderUid = chatData['sender'] as String?;
             final timestamp = chatData['lastMessengerTime'] as Timestamp?;
+            final unread = chatData['unread'] as List<dynamic>? ?? [];
+
+            //test
+            // final datetime=chatData['lastMessengerTime'];
+            // final time=datetime.toDate();
+            // print(datetime);
 
             return FutureBuilder<ProfileUser?>(
                 future: _fetchUserInfo(otherUid),
@@ -99,60 +116,100 @@ class _ChatTileState extends State<ChatTile> {
                     return SizedBox(
                       height: 50,
                       child: ListTile(
-                        title: Text(profileuser?.name ?? 'loading'),
 
-                        // subtitle: Text(widget.chat.lastMessenger ?? 'loading'),
-
-                        subtitle: FutureBuilder<ProfileUser?>(
-                          future: _fetchUserInfo(chatData['sender'] as String),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData && snapshot.data != null) {
-                              final senderName = snapshot.data!.name;
-                              return Text(
-                                '$senderName: ${lastMessage ?? ''}',
-                                overflow: TextOverflow.ellipsis,
-                              );
-                            } else if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            } else {
-                              return const Text('Đang tải...');
-                            }
-                          },
-                        ),
-
-                        trailing: timestamp != null
-                            ? Text(
-                                _formatTimestamp(timestamp),
-                                style:
-                                    const TextStyle(fontSize: 12, color: Colors.grey),
-                              )
-                            : null,
-
-                        subtitleTextStyle: TextStyle(
-                            color: Theme.of(context).colorScheme.primary),
-                        leading: profileuser?.profileImageUrl != ''
-                            ? ClipOval(
-                                child: FadeInImage.assetNetwork(
-                                placeholder:
-                                    'assets/image/icons8-person-30.png',
-                                image: profileuser!.profileImageUrl ?? '',
-                                fit: BoxFit.cover,
-                                height: 45,
-                                width: 45,
-                              ))
-                            : const Icon(Icons.person),
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ChatPage(
-                              myId: widget.curUid,
-                              friendId: profileuser!.uid,
-                              friendName: profileuser.name,
-                              chatDocId: widget.chat.id,
+                          //TITLE
+                          title: Text(
+                            profileuser?.name ?? 'loading',
+                            style: TextStyle(
+                              fontWeight: unread.contains(widget.curUid)
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                             ),
                           ),
-                        ),
-                      ),
+
+                          //NAME+LAST MSG
+                          subtitle: FutureBuilder<ProfileUser?>(
+                            future:
+                                _fetchUserInfo(chatData['sender'] as String),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData && snapshot.data != null) {
+                                final senderName = snapshot.data!.name;
+                                return Text(
+                                  '$senderName: ${lastMessage ?? ''}',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight: unread.contains(widget.curUid)
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    color: unread.contains(widget.curUid)
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .inversePrimary
+                                        : Theme.of(context).colorScheme.primary,
+                                  ),
+                                );
+                              } else if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              } else {
+                                return const Text('Đang tải...');
+                              }
+                            },
+                          ),
+
+                          //TIME
+                          trailing: timestamp != null
+                              ? Text(
+                                  _formatTimestamp(timestamp),
+                                  // time.toString(),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: unread.contains(widget.curUid)
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                    color: unread.contains(widget.curUid)
+                                        ? Theme.of(context)
+                                            .colorScheme
+                                            .inversePrimary
+                                        : Theme.of(context).colorScheme.primary,
+                                  ),
+                                )
+                              : null,
+
+                          //AVATAR
+                          subtitleTextStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.primary),
+                          leading: profileuser?.profileImageUrl != ''
+                              ? ClipOval(
+                                  child: FadeInImage.assetNetwork(
+                                  placeholder:
+                                      'assets/image/icons8-person-30.png',
+                                  image: profileuser!.profileImageUrl ?? '',
+                                  fit: BoxFit.cover,
+                                  height: 45,
+                                  width: 45,
+                                ))
+                              : const Icon(
+                                  Icons.person,
+                                ),
+                          onTap: () async {
+                            await _readed(
+                              widget.chat.id,
+                              widget.curUid,
+                            );
+
+                            //sang trang chat
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChatPage(
+                                  myId: widget.curUid,
+                                  friendId: profileuser!.uid,
+                                  friendName: profileuser.name,
+                                  chatDocId: widget.chat.id,
+                                ),
+                              ),
+                            );
+                          }),
                     );
                   } else {
                     return const CircularProgressIndicator();

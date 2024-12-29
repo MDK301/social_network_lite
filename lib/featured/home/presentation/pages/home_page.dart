@@ -6,6 +6,8 @@ import 'package:social_network_lite/featured/post/presentation/cubits/post_state
 import 'package:social_network_lite/featured/post/presentation/pages/upload_post_page.dart';
 import 'package:social_network_lite/responsive/constrainEdgeInsets_scaffold.dart';
 
+import '../../../auth/domain/entities/app_user.dart';
+import '../../../auth/presentation/cubits/auth_cubit.dart';
 import '../component/my_drawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,6 +18,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  AppUser? currentUser;
+
+  // get current user
+  void getCurrentUser() async {
+    final authCubit = context.read<AuthCubit>();
+    currentUser = authCubit.currentUser;
+  }
+
   //post cubit
 
   late final postCubit = context.read<PostCubit>();
@@ -26,6 +36,9 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     // fetch all posts
     fetchAllPosts();
+
+    //lay user
+    getCurrentUser();
   }
 
   void fetchAllPosts() {
@@ -84,13 +97,35 @@ class _HomePageState extends State<HomePage> {
                 // get individual post
                 final post = allPosts[index];
 
-                // image
-                return PostTile(
-                  post: post,
-                  onDeletePressed: () {
-                    deletePost(post.id);
-                  },
-                );
+                print(post.privacy);
+                if(post.privacy=="true") {
+
+                  if (post.userId == currentUser!.uid) {
+                    return PostTile(
+                      post: post,
+                      onDeletePressed: () {
+                        deletePost(post.id);
+                      },
+                    );
+                  } else {
+
+                  }
+                }else{
+
+                  return PostTile(
+                    post: post,
+                    onDeletePressed: () {
+                      deletePost(post.id);
+                    },
+                  );
+                }
+                // return PostTile(
+                //   post: post,
+                //   onDeletePressed: () {
+                //     deletePost(post.id);
+                //   },
+                // );
+
               },
             );
           }

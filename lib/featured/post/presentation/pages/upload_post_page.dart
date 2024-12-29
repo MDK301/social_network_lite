@@ -22,6 +22,9 @@ class UploadPostPage extends StatefulWidget {
 }
 
 class _UploadPostPageState extends State<UploadPostPage> {
+
+  bool privacy=false;
+
   // mobile image pick
   PlatformFile? imagePickedFile;
 
@@ -80,6 +83,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
       text: textController.text,
       imageUrl: '',
       timestamp: DateTime.now(),
+      privacy: privacy.toString(),
       likes:[],
       comments:[],
 
@@ -171,6 +175,18 @@ class _UploadPostPageState extends State<UploadPostPage> {
                 hintText: "Caption",
                 obscureText: false,
               ),
+              Row(children: [
+                Checkbox(
+                  value: privacy,
+                  onChanged: (value) {
+                    setState(() {
+                      privacy = value!;
+                    });
+                  },
+                ),
+                const Text('Private Post'),
+              ],
+              )
             ],
           ),
         ),

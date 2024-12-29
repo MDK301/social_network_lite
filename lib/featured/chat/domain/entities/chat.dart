@@ -34,9 +34,11 @@ class Chat {
       id: json['id'] as String,
       lastMessenger: json['lastMessenger']as String,
       sender: json['sender']as String? ??'',
-      lastMessengerTime: json['lastMessageTimestamp'] != null
-          ? (json['lastMessageTimestamp'] as Timestamp).toDate()
-          :  DateTime.now(), // Assign null if lastMessageTimestamp is null
+      lastMessengerTime:
+      // json['lastMessageTimestamp'] != null ?
+      (json['lastMessengerTime'] as Timestamp).toDate()
+          // :  DateTime.now()
+      ,
       participate: List<String>.from(json['participate']),
       unread: List<String>.from(json['unread'] ?? []),
     );

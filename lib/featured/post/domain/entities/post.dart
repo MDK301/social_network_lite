@@ -7,6 +7,7 @@ class Post {
   final String userName;
   final String text;
   final String imageUrl;
+  final String privacy;
   final DateTime timestamp;
   final List<String> likes;
   final List<Comment> comments;
@@ -18,6 +19,7 @@ class Post {
     required this.text,
     required this.imageUrl,
     required this.timestamp,
+    required this.privacy,
     required this.likes,
     required this.comments,
   });
@@ -30,6 +32,7 @@ class Post {
       text: text,
       imageUrl: imageUrl ?? this.imageUrl,
       timestamp: timestamp,
+      privacy: privacy,
       likes: likes,
       comments: comments,
     );
@@ -43,6 +46,7 @@ class Post {
       'text': text,
       'imageUrl': imageUrl,
       'timestamp': Timestamp.fromDate(timestamp),
+      'privacy': privacy,
       'likes': likes,
       'comments': comments.map((comment)=>comment.toJson()).toList(),
     };
@@ -66,6 +70,7 @@ class Post {
       timestamp: (json['timestamp'] as Timestamp).toDate(),
       likes:List<String>.from(json['likes'] ?? []),
       comments:comments,
+      privacy:json['privacy'],
     );
   }
 
