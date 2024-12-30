@@ -203,8 +203,8 @@ class _ChatTileState extends State<ChatTile> {
                               MaterialPageRoute(
                                 builder: (context) => ChatPage(
                                   myId: widget.curUid,
-                                  friendId: profileuser!.uid,
-                                  friendName: profileuser.name,
+                                  // friendId: profileuser!.uid,
+                                  // friendName: profileuser.name,
                                   chatDocId: widget.chat.id,
                                 ),
                               ),

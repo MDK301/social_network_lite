@@ -273,6 +273,8 @@ class _PostTileState extends State<PostTile> {
                   width: 50,
                   child: Row(
                     children: [
+
+                      //LIKE BUTTON
                       GestureDetector(
                         onTap: toggleLikePost,
                         child: Icon(
