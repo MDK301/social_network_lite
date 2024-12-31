@@ -460,6 +460,7 @@ class _ChatPageState extends State<ChatPage> {
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _message = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late var group_chat = false;
 
   String appBarTitle = "Loading...";
 
@@ -471,9 +472,8 @@ class _ChatPageState extends State<ChatPage> {
 
   // Hàm load danh sách người tham gia và cập nhật title
   Future<void> _loadParticipants() async {
-    final chatDoc = await _firestore.collection('chats')
-        .doc(widget.chatDocId)
-        .get();
+    final chatDoc =
+        await _firestore.collection('chats').doc(widget.chatDocId).get();
 
     if (chatDoc.exists) {
       final data = chatDoc.data()!;
@@ -487,24 +487,24 @@ class _ChatPageState extends State<ChatPage> {
         } else if (participants.length == 2) {
           final otherId = participants.firstWhere((id) => id != widget.myId);
           final otherUserDoc =
-          await _firestore.collection('users').doc(otherId).get();
+              await _firestore.collection('users').doc(otherId).get();
           setState(() {
             appBarTitle = otherUserDoc.data()?['name'] ?? "Unknown";
           });
         } else {
           // Xử lý nhiều hơn 2 người
-          final otherIds = participants.where((id) => id != widget.myId)
-              .toList();
+          final otherIds =
+              participants.where((id) => id != widget.myId).toList();
           final otherNames = await Future.wait(
             otherIds.map((id) async {
-              final userDoc = await _firestore.collection('users')
-                  .doc(id)
-                  .get();
+              final userDoc =
+                  await _firestore.collection('users').doc(id).get();
               return userDoc.data()?['name'] ?? "Unknown";
             }),
           );
 
           setState(() {
+            group_chat = true;
             appBarTitle = otherNames.take(3).join(', ');
             if (otherNames.length > 3) appBarTitle += ",...";
           });
@@ -513,21 +513,21 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
+  //gửi ảnh
   Future<void> _chonAnh() async {
     final XFile? pickedImage =
-    await _picker.pickImage(source: ImageSource.gallery);
+        await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       final String imageUrl = await _taiAnhLen(pickedImage.path);
       onSendMessage("", "image", imageUrl);
     }
   }
 
+  //tải lên storage
   Future<String> _taiAnhLen(String imagePath) async {
     final Reference storageReference = FirebaseStorage.instance
         .ref()
-        .child('chat_images/${DateTime
-        .now()
-        .millisecondsSinceEpoch}.jpg');
+        .child('chat_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
 
     final UploadTask uploadTask = storageReference.putFile(File(imagePath));
     await uploadTask.whenComplete(() {});
@@ -559,14 +559,17 @@ class _ChatPageState extends State<ChatPage> {
 
   void addNewPersonIntoChat() {
     final TextEditingController searchController = TextEditingController();
-    final ValueNotifier<List<Map<String, dynamic>>> searchResultsNotifier = ValueNotifier([]);
-    final ValueNotifier<List<Map<String, dynamic>>> selectedUsersNotifier = ValueNotifier([]);
+    final ValueNotifier<List<Map<String, dynamic>>> searchResultsNotifier =
+        ValueNotifier([]);
+    final ValueNotifier<List<Map<String, dynamic>>> selectedUsersNotifier =
+        ValueNotifier([]);
 
     void searchUsers(String query) async {
       final lowercaseQuery = query.toLowerCase();
 
       if (query.isNotEmpty) {
-        final result = await FirebaseFirestore.instance.collection("users").get();
+        final result =
+            await FirebaseFirestore.instance.collection("users").get();
 
         final filteredUsers = result.docs.where((doc) {
           final lowercaseName = doc.data()['name'].toString().toLowerCase();
@@ -575,9 +578,9 @@ class _ChatPageState extends State<ChatPage> {
 
         searchResultsNotifier.value = filteredUsers
             .map((doc) => {
-          'id': doc.id,
-          ...doc.data(),
-        })
+                  'id': doc.id,
+                  ...doc.data(),
+                })
             .toList();
       } else {
         searchResultsNotifier.value = [];
@@ -591,7 +594,8 @@ class _ChatPageState extends State<ChatPage> {
     }
 
     void removeUserFromSelected(String userId) {
-      selectedUsersNotifier.value = selectedUsersNotifier.value.where((u) => u['id'] != userId).toList();
+      selectedUsersNotifier.value =
+          selectedUsersNotifier.value.where((u) => u['id'] != userId).toList();
     }
 
     showDialog(
@@ -607,7 +611,8 @@ class _ChatPageState extends State<ChatPage> {
                 controller: searchController,
                 decoration: InputDecoration(
                   hintText: "Search users...",
-                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+                  hintStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
                 onChanged: (value) => searchUsers(value),
               ),
@@ -630,7 +635,8 @@ class _ChatPageState extends State<ChatPage> {
                           final user = searchResults[index];
                           return ListTile(
                             leading: CircleAvatar(
-                              backgroundImage: NetworkImage(user['profileImageUrl'] ?? ''),
+                              backgroundImage:
+                                  NetworkImage(user['profileImageUrl'] ?? ''),
                               child: user['profileImageUrl'] == null
                                   ? const Icon(Icons.person)
                                   : null,
@@ -671,7 +677,8 @@ class _ChatPageState extends State<ChatPage> {
                           final user = selectedUsers[index];
                           return ListTile(
                             leading: CircleAvatar(
-                              backgroundImage: NetworkImage(user['profileImageUrl'] ?? ''),
+                              backgroundImage:
+                                  NetworkImage(user['profileImageUrl'] ?? ''),
                               child: user['profileImageUrl'] == null
                                   ? const Icon(Icons.person)
                                   : null,
@@ -680,7 +687,8 @@ class _ChatPageState extends State<ChatPage> {
                             subtitle: Text(user['email'] ?? ''),
                             trailing: IconButton(
                               icon: const Icon(Icons.close, color: Colors.red),
-                              onPressed: () => removeUserFromSelected(user['id']),
+                              onPressed: () =>
+                                  removeUserFromSelected(user['id']),
                             ),
                           );
                         },
@@ -708,21 +716,87 @@ class _ChatPageState extends State<ChatPage> {
 
           // Nút Save
           TextButton(
-            onPressed: () {
-              if (selectedUsersNotifier.value.isNotEmpty) {
-                Navigator.of(context).pop(selectedUsersNotifier.value);
-              } else {
+            onPressed: () async {
+              // Lấy danh sách người dùng được chọn từ `selectedUsersNotifier`
+              final selectedUsers = selectedUsersNotifier.value;
+
+              if (selectedUsers.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text("No users selected.")),
                 );
+                return;
+              }
+
+              // Lấy tài liệu chat hiện tại từ Firestore
+              final chatDoc = await FirebaseFirestore.instance
+                  .collection('chats')
+                  .doc(widget.chatDocId)
+                  .get();
+
+              if (chatDoc.exists) {
+                final data = chatDoc.data()!;
+                final participants =
+                    List<String>.from(data['participate'] ?? []);
+
+                if (participants.length >= 3) {
+                  // Nếu `participate >= 3`: Thêm người dùng được chọn vào nhóm
+                  final newParticipants = selectedUsers
+                      .where((user) => !participants
+                          .contains(user['id'])) // Loại bỏ trùng lặp
+                      .map((user) => user['id'])
+                      .toList();
+
+                  await FirebaseFirestore.instance
+                      .collection('chats')
+                      .doc(widget.chatDocId)
+                      .update({
+                    'participate': FieldValue.arrayUnion(newParticipants),
+                  });
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Users added to the group.")),
+                  );
+
+                  Navigator.of(context).pop();
+                } else {
+                  // Nếu `participate < 3`: Tạo một nhóm chat mới
+                  final newParticipants = selectedUsers
+                      .map((user) => user['id'])
+                      .toList()
+                    ..add(widget.myId); // Thêm người dùng hiện tại vào nhóm
+
+                  final newChatDoc =
+                      FirebaseFirestore.instance.collection('chats').doc();
+
+                  await newChatDoc.set({
+                    'id': newChatDoc.id,
+                    'participate': newParticipants,
+                    'lastMessenger': '',
+                    'lastMessengerTime': FieldValue.serverTimestamp(),
+                    'sender': widget.myId,
+                    'unread': newParticipants,
+                  });
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("New group chat created.")),
+                  );
+
+                  Navigator.of(context).pop();
+                }
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Chat does not exist.")),
+                );
               }
             },
-            child: const Text("Save"),
+            child: group_chat
+                ? const Text("Add to group")
+                : const Text("Create group chat"),
           ),
         ],
       ),
     );
-}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -732,9 +806,15 @@ class _ChatPageState extends State<ChatPage> {
       appBar: AppBar(
         title: Text(appBarTitle),
         actions: [
-          IconButton(
-            onPressed: addNewPersonIntoChat,
-            icon: const Icon(Icons.person_add),
+          GestureDetector(
+            onTap: () async {
+              await _loadParticipants();
+              addNewPersonIntoChat();
+            },
+            child: const Icon(Icons.person_add),
+          ),
+          const SizedBox(
+            width: 20,
           ),
         ],
       ),
@@ -780,11 +860,12 @@ class _ChatPageState extends State<ChatPage> {
                     controller: _message,
                     maxLines: null,
                     decoration: InputDecoration(
-                      hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary, ),
+                      hintStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                       hintText: "Type a message...",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-
                       ),
                     ),
                   ),
@@ -802,30 +883,72 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _messageBubble(Size size, Map<String, dynamic> map) {
-    return Align(
+    return Container(
+      width: size.width,
       alignment: map["senderId"] == widget.myId
           ? Alignment.centerRight
           : Alignment.centerLeft,
       child: Container(
-        padding: const EdgeInsets.all(12),
-        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-        decoration: BoxDecoration(
-          color: map["senderId"] == widget.myId
-              ? Theme.of(context).colorScheme.inversePrimary
-              : Theme.of(context).colorScheme.secondary,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: map["msg"] != null
-            ? Text(
-          map["msg"],
-          style: TextStyle(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+          margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+          decoration: BoxDecoration(
             color: map["senderId"] == widget.myId
-                ? Theme.of(context).colorScheme.secondary
-                : Theme.of(context).colorScheme.inversePrimary,
+                ? Theme.of(context).colorScheme.inversePrimary
+                : Theme.of(context).colorScheme.secondary,
+            borderRadius: BorderRadius.circular(25),
           ),
-        )
-            : CachedNetworkImage(imageUrl: map["msgImageUrl"]),
-      ),
+          child: Column(
+            children: [
+              (map["msg"] != null || map["msgImageUrl"] != null)
+                  ? Column(
+                      children: [
+                        //Nếu hình ảnh ton tại
+                        (map["msgImageUrl"] != null)
+                            ? GestureDetector(
+                                onTap: () {
+                                  //_luuAnh(map["msgImageUrl"]);
+                                },
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth: MediaQuery.of(context).size.width * 0.8, // 80% chiều rộng màn hình
+                                    maxHeight: 300, // Tối đa chiều cao là 300px
+                                  ),
+                                  child: CachedNetworkImage(
+                                    imageUrl: map["msgImageUrl"],
+                                    fit: BoxFit.cover, // Đảm bảo ảnh giữ đúng tỷ lệ
+                                    placeholder: (context, url) => CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                                  ),
+                                ),
+                        )
+                            : const SizedBox(),
+
+                        //Nếu tin nhan ton tai
+                        (map["msg"] != null)
+                            ? ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width * 0.8, // 80% chiều rộng màn hình
+                          ),
+                              child: Text(
+                                  map["msg"],
+                                  //STYLE OF MSG
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: map["senderId"] == widget.myId
+                                        ? Theme.of(context).colorScheme.secondary
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .inversePrimary,
+                                  ),
+                                ),
+                            )
+                            : const SizedBox(),
+                      ],
+                    )
+                  : const Text('Loading...'),
+            ],
+          )),
     );
   }
 }

@@ -103,14 +103,13 @@ class FirebaseChatRepo implements ChatRepo {
         // Generate a new document ID
         DocumentReference docRef = chatsCollection.doc();
 
-        // Current timestamp
-        Timestamp currentTimestamp = Timestamp.now();
+
 
         // Create the chat document
         await docRef.set({
           'id': docRef.id,
           'lastMessenger': '',
-          'lastMessengerTime': currentTimestamp,
+          'lastMessengerTime': FieldValue.serverTimestamp(),
           'participate': [uid1, uid2],
           'sender':uid1,
           'unread': [uid1, uid2],
