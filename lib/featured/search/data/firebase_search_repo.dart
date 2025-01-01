@@ -16,7 +16,9 @@ class FirebaseSearchRepo implements SearchRepo {
       // lọc user
       final filteredUsers = result.docs.where((doc) {
         final lowercaseName = doc.data()['name'].toString().toLowerCase(); // chuyen thanh thường từ data
-        return lowercaseName.startsWith(lowercaseQuery); //be nao trung ten len buc nhan thuong
+        final lowercaseEmail = doc.data()['email'].toString().toLowerCase(); // chuyen thanh thường từ data
+
+        return lowercaseName.startsWith(lowercaseQuery)||lowercaseEmail.startsWith(lowercaseQuery) ; //be nao trung ten len buc nhan thuong
       }).toList();
 
       return filteredUsers
