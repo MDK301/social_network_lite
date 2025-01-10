@@ -10,6 +10,24 @@ import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/cubits/auth_cubit.dart';
 import '../component/my_drawer.dart';
 
+//thêm danh sách nguoi da xem. ( ai load post nao thi post do se luu uid cua nguoi do.)
+// sap xep danh sach bai viet:
+// + BV nhieu tim: đếm số tim nhiều nhất trong top 10, chọn random 2
+// + BV moi: chọn 2 bài đầu
+// + BV cua nguoi co nhieu follow:
+//      -nguoi co nhieu follow top 30 chọn random 3
+//      -chon bai viet nhieu tim nhat cua 3 nguoi do
+// + BV cua nguoi minh dang follow ( mới chưa xem nếu >15 chọn 5 random )
+// + BC cua ban be chọn hết ( mới chưa xem tầm 20 bài)
+// random những thằng trên top đầu bảo đảm những thứ này
+// phần còn lại sẽ hiển thị randome toàm bộ phần còn lại
+
+//cập nhật avatar current user at my drawer.
+
+//khoa binh luan
+
+//report bài viet
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
