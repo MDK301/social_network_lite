@@ -96,4 +96,25 @@ class FirebaseAuthRepo implements AuthRepo {
       name: userDoc['name'],
     );
   }
+
+  @override
+  Future<bool> checkLockState(String uid) async {
+
+
+    // fetch user document from firestore
+    DocumentSnapshot userDoc = await firebaseFirestore
+        .collection("tempdeleted")
+        .doc(uid)
+        .get();
+
+    print("uid: $uid ");
+
+    // check if user doc exists
+    if (userDoc.exists) {
+      return true;
+    }else{
+      return false;
+    }
+
+  }
 }

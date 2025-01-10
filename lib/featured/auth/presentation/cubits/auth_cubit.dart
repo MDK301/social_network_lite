@@ -20,10 +20,15 @@ class AuthCubit extends Cubit<AuthState> {
 
     if (user != null) {
       _currentUser = user;
-      emit(Authenticated(user));
+      var isLock = await authRepo.checkLockState(user.uid);
+      print("State $isLock");
+      if(isLock==true){
+        emit(Lock());
+      }else{
+        emit(Authenticated(user));
+      }
     } else {
       // print("toi chua dang nhap va dang trong ham checkAuth");
-
       emit(Unauthenticated());
     }
   }
@@ -40,7 +45,14 @@ class AuthCubit extends Cubit<AuthState> {
       if (user != null) {
         // print("inif1");
         _currentUser = user;
-        emit(Authenticated(user));
+        var isLock = await authRepo.checkLockState(user.uid);
+        print("State $isLock");
+
+        if(isLock==true){
+          emit(Lock());
+        }else{
+          emit(Authenticated(user));
+        }
       } else {
         // print("inif2");
 

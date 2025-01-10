@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/data/firebase_auth_repo.dart';
 import 'package:social_network_lite/featured/auth/presentation/cubits/auth_cubit.dart';
 import 'package:social_network_lite/featured/auth/presentation/pages/auth_page.dart';
+import 'package:social_network_lite/featured/auth/presentation/pages/lock_page.dart';
 import 'package:social_network_lite/featured/chat/data/firebase_chat_repo.dart';
 import 'package:social_network_lite/featured/chat/presentation/cubits/chat_cubit.dart';
 import 'package:social_network_lite/featured/post/data/firebase_post_repo.dart';
@@ -87,15 +88,22 @@ class MyApp extends StatelessWidget {
               //check auth
               home: BlocConsumer<AuthCubit, AuthState>(
                 builder: (context, authState) {
+
+
                   // unauthenticated -> auth page (login/register)
                   if (authState is Unauthenticated) {
                     return const AuthPage();
                   }
-
+                  // lock -> lockpage
+                  if(authState is Lock){
+                    return const LockPage();
+                  }
                   // authenticated -> home page
                   if (authState is Authenticated) {
+
                     return const HomePage();
                   }
+
 
                   // loading..
                   else {

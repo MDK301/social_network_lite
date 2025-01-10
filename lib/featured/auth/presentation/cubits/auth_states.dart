@@ -18,6 +18,9 @@ class Authenticated extends AuthState {
 // unauthenticated
 class Unauthenticated extends AuthState {}
 
+// unauthenticated
+class Lock extends AuthState {}
+
 // errors..
 class AuthError extends AuthState {
   final String message;
