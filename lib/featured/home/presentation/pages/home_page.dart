@@ -28,6 +28,8 @@ import '../component/my_drawer.dart';
 
 //report bài viet
 
+//kiem tra trang thai ket noi mang   connectivity_plus: ^3.0.6
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
