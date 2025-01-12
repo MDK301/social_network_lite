@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart';
 import 'package:social_network_lite/featured/auth/domain/repos/auth_repo.dart';
+
+import '../../../config/user_status_service.dart';
 
 class FirebaseAuthRepo implements AuthRepo {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseFirestore= FirebaseFirestore.instance;
+  final DatabaseReference _database = FirebaseDatabase.instance.ref();
 
   @override
   Future<AppUser?> loginWithEmailPassword(String email, String password) async {
@@ -27,6 +31,12 @@ class FirebaseAuthRepo implements AuthRepo {
         name: userDoc['name'],
       );
 
+      // them cai nay de set online cho realtime db
+      final userStatusRef = _database.child('userstatus').child(user.uid);
+      userStatusRef.update({
+        "status": "Online",
+        "lastSeen": ServerValue.timestamp,
+      });
       // return user
       return user;
     } catch (e) {
@@ -54,6 +64,12 @@ class FirebaseAuthRepo implements AuthRepo {
           .doc(user.uid)
           .set(user.toJson());
 
+      // them cai nay de set online cho realtime db
+      final userStatusRef = _database.child('userstatus').child(user.uid);
+      userStatusRef.update({
+        "status": "Online",
+        "lastSeen": ServerValue.timestamp,
+      });
       // return user
       return user;
     }

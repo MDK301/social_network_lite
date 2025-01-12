@@ -7,6 +7,8 @@ import 'package:social_network_lite/featured/profile/presentation/pages/profile_
 import 'package:social_network_lite/featured/search/presentation/pages/search_page.dart';
 import 'package:social_network_lite/featured/setting/pages/page.dart';
 
+import '../../../../config/user_status_service.dart';
+import '../../../auth/domain/entities/app_user.dart';
 import 'my_drawer_tile.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -14,6 +16,9 @@ class MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    late final authCubit = context.read<AuthCubit>();
+    late AppUser? currentUser = authCubit.currentUser;
+    final UserStatusService _userStatusService = UserStatusService();
     return Drawer(
       backgroundColor: Theme.of(context).colorScheme.surface,
       child: SafeArea(
@@ -127,6 +132,10 @@ class MyDrawer extends StatelessWidget {
                 icon: Icons.logout,
                 onTap: () {
                   context.read<AuthCubit>().logout();
+
+
+                  _userStatusService.setOffline(currentUser!.uid);
+                  authCubit.logout();
                 },
               ),
             ],

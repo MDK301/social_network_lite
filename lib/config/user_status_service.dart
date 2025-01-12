@@ -18,4 +18,14 @@ class UserStatusService {
       });
     }
   }
+
+  void setOffline(String? uid) {
+    if (uid != null) {
+      final userStatusRef = _database.child('userstatus').child(uid);
+      userStatusRef.update({
+        "status": "Offline",
+        "lastSeen": ServerValue.timestamp,
+      });
+    }
+  }
 }
