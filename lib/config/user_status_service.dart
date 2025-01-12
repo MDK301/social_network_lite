@@ -5,10 +5,9 @@ class UserStatusService {
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  void setOnline() {
-    final user = _auth.currentUser;
-    if (user != null) {
-      final userStatusRef = _database.child('userstatus').child(user.uid);
+  void setOnline(String? uid) {
+    if (uid != null) {
+      final userStatusRef = _database.child('userstatus').child(uid);
       userStatusRef.update({
         "status": "Online",
         "lastSeen": ServerValue.timestamp,

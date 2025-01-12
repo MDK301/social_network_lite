@@ -3,6 +3,7 @@ Auth Cubit: State Management
 */
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_network_lite/config/user_status_service.dart';
 import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart';
 import 'package:social_network_lite/featured/auth/domain/repos/auth_repo.dart';
 
@@ -11,20 +12,26 @@ import 'auth_states.dart';
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepo authRepo;
   AppUser? _currentUser;
+  final UserStatusService _userStatusService = UserStatusService(); // Thêm UserStatusService
 
   AuthCubit({required this.authRepo}) : super(AuthInitial());
 
 // check if user is already authenticated
   void checkAuth() async {
     final AppUser? user = await authRepo.getCurrentUser();
+    emit(AuthLoading());
 
+    //check có hay ko user
     if (user != null) {
+
+      //lấy user hiện tại
       _currentUser = user;
+      //check khóa
       var isLock = await authRepo.checkLockState(user.uid);
-      print("State $isLock");
       if(isLock==true){
         emit(Lock());
       }else{
+        _userStatusService.setOnline(user.uid); //setOnline khi login
         emit(Authenticated(user));
       }
     } else {

@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,6 +34,17 @@ class SettingsPage extends StatelessWidget {
               },
             ),
           ),
+          IconButton(onPressed: (){DatabaseReference ref = FirebaseDatabase.instance.ref("test");
+
+          ref.set({
+            "name": "Test User",
+            "isOnline": true
+          }).then((_) {
+            print("Data written successfully!");
+          }).catchError((error) {
+            print("Failed to write data: $error");
+          });
+          }, icon: Icon(Icons.table_rows,size: 350,))
         ],
       ),
     );

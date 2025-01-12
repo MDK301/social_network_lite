@@ -14,11 +14,13 @@ import 'package:social_network_lite/featured/search/data/firebase_search_repo.da
 import 'package:social_network_lite/featured/search/presentation/cubits/search_cubit.dart';
 import 'package:social_network_lite/featured/storage/data/firebase_storage_repo.dart';
 import 'package:social_network_lite/themes/theme_cubit.dart';
-
+import 'AppLifeCycleObserver.dart';
 import 'featured/auth/presentation/cubits/auth_states.dart';
 import 'featured/home/presentation/pages/home_page.dart';
 
 class MyApp extends StatelessWidget {
+  MyApp({super.key});
+
   //auth repo
   final firebaseauthRepo = FirebaseAuthRepo();
 
@@ -32,11 +34,10 @@ class MyApp extends StatelessWidget {
   final firebasestorageRepo = FirebaseStorageRepo();
 
   //post repo
-  final firebasepostRepo=FirebasePostRepo();
-  //search repo
-  final firebasesearchRepo=FirebaseSearchRepo();
+  final firebasepostRepo = FirebasePostRepo();
 
-  MyApp({super.key});
+  //search repo
+  final firebasesearchRepo = FirebaseSearchRepo();
 
   @override
   Widget build(BuildContext context) {
@@ -51,12 +52,14 @@ class MyApp extends StatelessWidget {
 
         //profile cubit
         BlocProvider<ProfileCubit>(
-          create: (context) => ProfileCubit(profileRepo: firebaseprofileRepo,storageRepo: firebasestorageRepo),
+          create: (context) =>
+              ProfileCubit(profileRepo: firebaseprofileRepo, storageRepo: firebasestorageRepo),
         ),
 
         //chat cubit
         BlocProvider<ChatCubit>(
-          create: (context) => ChatCubit(chatRepo: firebasechatRepo,storageRepo: firebasestorageRepo),
+          create: (context) =>
+              ChatCubit(chatRepo: firebasechatRepo, storageRepo: firebasestorageRepo),
         ),
 
         //post cubit
@@ -77,37 +80,29 @@ class MyApp extends StatelessWidget {
           create: (context) => ThemeCubit(),
         ),
       ],
-
-      //check theme
-      child:  BlocBuilder<ThemeCubit,ThemeData>(
-        builder: (context,currentTheme) {
+      child: AppLifecycleObserver(
+        child: BlocBuilder<ThemeCubit, ThemeData>(builder: (context, currentTheme) {
           return MaterialApp(
               debugShowCheckedModeBanner: false,
               theme: currentTheme,
-
               //check auth
               home: BlocConsumer<AuthCubit, AuthState>(
                 builder: (context, authState) {
-
-
                   // unauthenticated -> auth page (login/register)
                   if (authState is Unauthenticated) {
                     return const AuthPage();
                   }
                   // lock -> lockpage
-                  if(authState is Lock){
+                  if (authState is Lock) {
                     return const LockPage();
                   }
                   // authenticated -> home page
                   if (authState is Authenticated) {
-
                     return const HomePage();
                   }
 
-
                   // loading..
                   else {
-
                     return const Scaffold(
                       body: Center(
                         child: CircularProgressIndicator(
@@ -126,7 +121,7 @@ class MyApp extends StatelessWidget {
                   }
                 },
               ));
-        }
+        }),
       ),
     );
   }
