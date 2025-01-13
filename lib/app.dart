@@ -100,6 +100,10 @@ class MyApp extends StatelessWidget {
                   if (authState is Authenticated) {
                     return const HomePage();
                   }
+                  // authenticated -> home page
+                  if (authState is EmailVerificationRequired) {
+                    return const AuthPage();
+                  }
 
                   // loading..
                   else {

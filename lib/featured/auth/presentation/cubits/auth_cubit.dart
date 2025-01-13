@@ -2,6 +2,7 @@
 Auth Cubit: State Management
 */
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/config/user_status_service.dart';
 import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart';
@@ -12,7 +13,8 @@ import 'auth_states.dart';
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepo authRepo;
   AppUser? _currentUser;
-  final UserStatusService _userStatusService = UserStatusService(); // Thêm UserStatusService
+  final UserStatusService _userStatusService =
+      UserStatusService(); // Thêm UserStatusService
 
   AuthCubit({required this.authRepo}) : super(AuthInitial());
 
@@ -23,15 +25,14 @@ class AuthCubit extends Cubit<AuthState> {
 
     //check có hay ko user
     if (user != null) {
-
       //lấy user hiện tại
       _currentUser = user;
-      
+
       //check khóa
       var isLock = await authRepo.checkLockState(user.uid);
-      if(isLock==true){
+      if (isLock == true) {
         emit(Lock());
-      }else{
+      } else {
         _userStatusService.setOnline(user.uid); //setOnline khi login
         emit(Authenticated(user));
       }
@@ -49,17 +50,25 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(AuthLoading());
       final user = await authRepo.loginWithEmailPassword(email, pw);
+      final verifyUser = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
         // print("inif1");
         _currentUser = user;
+
+        //check if account being ban
         var isLock = await authRepo.checkLockState(user.uid);
         print("State $isLock");
-
-        if(isLock==true){
+        if (isLock == true) {
           emit(Lock());
-        }else{
-          emit(Authenticated(user));
+        } else {
+          if (!verifyUser!.emailVerified) {
+            emit(AuthError(
+                "Tài khoản này chưa xác thực.\nChúng tôi đã gửi lại email xác thực. Vui lòng kiểm tra và làm theo hướng dẫn."));
+            emit(EmailVerificationRequired());
+          } else {
+            emit(Authenticated(user));
+          }
         }
       } else {
         // print("inif2");
@@ -78,10 +87,10 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       emit(AuthLoading());
       final user = await authRepo.registerWithEmailPassword(name, email, pw);
-
       if (user != null) {
         _currentUser = user;
-        emit(Authenticated(user));
+        emit(AuthError("Đã gửi email xác thực. Vui lòng kiểm tra email và làm theo hướng dẫn. "));
+        emit(EmailVerificationRequired());
       } else {
         emit(Unauthenticated());
       }
@@ -90,12 +99,16 @@ class AuthCubit extends Cubit<AuthState> {
       emit(Unauthenticated());
     }
   }
-  
+
   // logout
   Future<void> logout() async {
     authRepo.logout();
     emit(Unauthenticated());
   }
-  
-  
+
+  //send email
+  Future<void> sendEmail() async {
+    authRepo.sendEmail();
+    emit(EmailVerificationRequired());
+  }
 }

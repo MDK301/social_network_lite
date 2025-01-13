@@ -31,13 +31,11 @@ class _RegisterPageState extends State<RegisterPage> {
       // auth cubit
     final authCubit = context.read<AuthCubit>();
 
-      // ensure the fields aren't empty
-    if (email.isNotEmpty &&
-        name.isNotEmpty &&
-        pw.isNotEmpty &&
-        confirmPW.isNotEmpty) {
-      // ensure passwords match
+      //Ensure the fields aren't empty
+    if (email.isNotEmpty && name.isNotEmpty && pw.isNotEmpty && confirmPW.isNotEmpty) {
+      //ensure pasSwords match
       if (pw == confirmPW) {
+
         authCubit.register(name, email, pw);
       }
 
@@ -64,6 +62,7 @@ class _RegisterPageState extends State<RegisterPage> {
     confirmpwController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return ConstrainedScaffold(

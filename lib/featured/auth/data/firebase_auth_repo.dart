@@ -46,7 +46,8 @@ class FirebaseAuthRepo implements AuthRepo {
   }
 
   @override
-  Future<AppUser?> registerWithEmailPassword(String name, String email, String password) async {
+  Future<AppUser?> registerWithEmailPassword(
+      String name, String email, String password) async {
     try {
       // attempt sign up
       UserCredential userCredential = await firebaseAuth
@@ -68,9 +69,14 @@ class FirebaseAuthRepo implements AuthRepo {
       // them cai nay de set online cho realtime db
       final userStatusRef = _database.child('userstatus').child(user.uid);
       userStatusRef.update({
-        "status": "Online",
+        "status": "Offline",
         "lastSeen": ServerValue.timestamp,
       });
+
+      //send email cho user
+      final verifyUser = FirebaseAuth.instance.currentUser;
+      await verifyUser!.sendEmailVerification();
+
       // return user
       return user;
     }
@@ -83,6 +89,17 @@ class FirebaseAuthRepo implements AuthRepo {
   @override
   Future<void> logout() async {
     await firebaseAuth.signOut();
+  }
+
+  @override
+  Future<void> sendEmail() async {
+    try {
+      //send email cho user
+      final verifyUser = FirebaseAuth.instance.currentUser;
+      await verifyUser!.sendEmailVerification();
+    } catch (e) {
+      throw Exception('verifyUser failed: $e');
+    }
   }
 
   @override
@@ -135,9 +152,10 @@ class FirebaseAuthRepo implements AuthRepo {
       throw AuthException(e.message ?? 'Lỗi không xác định');
     }
   }
-
 }
+
 class AuthException implements Exception {
   final String message;
+
   AuthException(this.message);
 }

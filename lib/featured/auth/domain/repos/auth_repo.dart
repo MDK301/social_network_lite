@@ -12,6 +12,8 @@ abstract class AuthRepo {
 
   Future<void> logout();
 
+  Future<void> sendEmail();
+
   Future<AppUser?> getCurrentUser();
 
   Future<bool> checkLockState(String uid);
