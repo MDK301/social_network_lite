@@ -55,6 +55,7 @@ class _RegisterPageState extends State<RegisterPage> {
           const SnackBar(content: Text("Please complete all fields")));
     }
   }
+
   @override
   void dispose() {
     nameController.dispose();
