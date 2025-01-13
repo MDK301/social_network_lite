@@ -34,17 +34,17 @@ class SettingsPage extends StatelessWidget {
               },
             ),
           ),
-          IconButton(onPressed: (){DatabaseReference ref = FirebaseDatabase.instance.ref("test");
-
-          ref.set({
-            "name": "Test User",
-            "isOnline": true
-          }).then((_) {
-            print("Data written successfully!");
-          }).catchError((error) {
-            print("Failed to write data: $error");
-          });
-          }, icon: Icon(Icons.table_rows,size: 350,))
+          // IconButton(onPressed: (){DatabaseReference ref = FirebaseDatabase.instance.ref("test");
+          //
+          // ref.set({
+          //   "name": "Test User",
+          //   "isOnline": true
+          // }).then((_) {
+          //   print("Data written successfully!");
+          // }).catchError((error) {
+          //   print("Failed to write data: $error");
+          // });
+          // }, icon: Icon(Icons.table_rows,size: 350,))
         ],
       ),
     );
