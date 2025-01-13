@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart';
 import 'package:social_network_lite/featured/auth/domain/repos/auth_repo.dart';
 
@@ -8,7 +9,7 @@ import '../../../config/user_status_service.dart';
 
 class FirebaseAuthRepo implements AuthRepo {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-  final FirebaseFirestore firebaseFirestore= FirebaseFirestore.instance;
+  final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final DatabaseReference _database = FirebaseDatabase.instance.ref();
 
   @override
@@ -45,7 +46,8 @@ class FirebaseAuthRepo implements AuthRepo {
   }
 
   @override
-  Future<AppUser?> registerWithEmailPassword( String name, String email, String password) async {
+  Future<AppUser?> registerWithEmailPassword(
+      String name, String email, String password) async {
     try {
       // attempt sign up
       UserCredential userCredential = await firebaseAuth
@@ -73,7 +75,7 @@ class FirebaseAuthRepo implements AuthRepo {
       // return user
       return user;
     }
-       // catch any errors..
+    // catch any errors..
     catch (e) {
       throw Exception('Login failed: $e');
     }
@@ -95,10 +97,8 @@ class FirebaseAuthRepo implements AuthRepo {
     }
 
     // fetch user document from firestore
-    DocumentSnapshot userDoc = await firebaseFirestore
-        .collection("users")
-        .doc(firebaseUser.uid)
-        .get();
+    DocumentSnapshot userDoc =
+        await firebaseFirestore.collection("users").doc(firebaseUser.uid).get();
 
     // check if user doc exists
     if (!userDoc.exists) {
@@ -115,22 +115,30 @@ class FirebaseAuthRepo implements AuthRepo {
 
   @override
   Future<bool> checkLockState(String uid) async {
-
-
     // fetch user document from firestore
-    DocumentSnapshot userDoc = await firebaseFirestore
-        .collection("tempdeleted")
-        .doc(uid)
-        .get();
+    DocumentSnapshot userDoc =
+        await firebaseFirestore.collection("tempdeleted").doc(uid).get();
 
     print("uid: $uid ");
 
     // check if user doc exists
     if (userDoc.exists) {
       return true;
-    }else{
+    } else {
       return false;
     }
-
   }
+
+  Future<void> resetPassword(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim());
+    } on FirebaseAuthException catch (e) {
+      throw AuthException(e.message ?? 'Lỗi không xác định');
+    }
+  }
+
+}
+class AuthException implements Exception {
+  final String message;
+  AuthException(this.message);
 }
