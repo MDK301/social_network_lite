@@ -11,8 +11,8 @@ class UserTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(user.name),
-      subtitle: Text(user.email),
-      subtitleTextStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+      // subtitle: Text(user.email),
+      // subtitleTextStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
       leading: Icon(
         Icons.person,
         color: Theme.of(context).colorScheme.primary,

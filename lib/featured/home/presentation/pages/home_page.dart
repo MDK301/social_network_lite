@@ -10,8 +10,9 @@ import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/cubits/auth_cubit.dart';
 import '../component/my_drawer.dart';
 
-//thêm danh sách nguoi da xem. ( ai load post nao thi post do se luu uid cua nguoi do.)
-// sap xep danh sach bai viet:
+//thêm danh sách nguoi da xem. ( ai load post nao thi post do se luu uid cua nguoi do.)  ==================
+
+// sap xep danh sach bai viet: ==================
 // + BV nhieu tim: đếm số tim nhiều nhất trong top 10, chọn random 2
 // + BV moi: chọn 2 bài đầu
 // + BV cua nguoi co nhieu follow:
@@ -22,13 +23,21 @@ import '../component/my_drawer.dart';
 // random những thằng trên top đầu bảo đảm những thứ này
 // phần còn lại sẽ hiển thị randome toàm bộ phần còn lại
 
-//cập nhật avatar current user at my drawer.
+//cập nhật avatar current user at my drawer. ==================
 
-//khoa binh luan
+//khoa binh luan ==================
 
-//report bài viet
+//report bài viet ==================
 
-//kiem tra trang thai ket noi mang   connectivity_plus: ^3.0.6
+// xac thuc email ================== OK
+
+//chat nhóm ================== OK
+
+//quên mật khẩu ================== OK
+
+//block list  ==================
+
+//email privacy  ==================
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
