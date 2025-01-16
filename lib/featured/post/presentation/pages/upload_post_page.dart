@@ -86,6 +86,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
       privacy: privacy.toString(),
       likes:[],
       comments:[],
+      lock: 'false',
 
     );
 

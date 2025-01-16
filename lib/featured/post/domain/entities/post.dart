@@ -11,6 +11,7 @@ class Post {
   final DateTime timestamp;
   final List<String> likes;
   final List<Comment> comments;
+  final String lock;
 
   Post({
     required this.id,
@@ -22,6 +23,7 @@ class Post {
     required this.privacy,
     required this.likes,
     required this.comments,
+    required this.lock,
   });
 
   Post copyWith({String? imageUrl}) {
@@ -35,6 +37,7 @@ class Post {
       privacy: privacy,
       likes: likes,
       comments: comments,
+      lock: lock,
     );
   }
 // convert post -> json
@@ -49,6 +52,7 @@ class Post {
       'privacy': privacy,
       'likes': likes,
       'comments': comments.map((comment)=>comment.toJson()).toList(),
+      'lock': lock,
     };
   }
 
@@ -71,6 +75,7 @@ class Post {
       likes:List<String>.from(json['likes'] ?? []),
       comments:comments,
       privacy:json['privacy'],
+      lock:json['lock'],
     );
   }
 
