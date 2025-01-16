@@ -13,7 +13,19 @@ import 'package:social_network_lite/featured/profile/presentation/cubits/profile
 import 'package:social_network_lite/featured/profile/presentation/pages/profile_page.dart';
 
 import '../../domain/entities/comment.dart';
-
+//container + padding + decoration + border = chỗ chứa + space + trang tri + khung
+// child: Container(
+// // padding:
+// //     const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+// // decoration: BoxDecoration(
+// //   //check viền
+// //     border: Border.all(
+// //       color: Theme.of(context).colorScheme.inversePrimary,
+// //       width: 1,
+// //     ),
+// //     //bo góc
+// //     borderRadius: BorderRadius.circular(8)),
+// child: Text(
 class PostTile extends StatefulWidget {
   final Post post;
   final void Function()? onDeletePressed;
@@ -68,64 +80,67 @@ class _PostTileState extends State<PostTile> {
       context: context,
       builder: (context) => AlertDialog(
         content: SizedBox(
-            child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextButton(
-              onPressed: () {},
-              child: Container(
-                child: Text(
-                  "REPORT",
-                  style: TextStyle(
-                    fontSize: 25,
-                    color: Theme.of(context).colorScheme.inversePrimary,
-                  ),
-                ),
-              ),
-            ),
+          width: double.maxFinite, // Đảm bảo danh sách không bị tràn
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: isOwnPost ? 3 : 1, // Số lượng tùy chọn
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                //REPORT
+                return ListTile(
+                  leading: const Icon(Icons.report), // Icon cho tùy chọn "REPORT"
+                  title: const Text("REPORT"),
+                  onTap: () {
+                    Navigator.of(context).pop(); // Đóng dialog
+                    // Xử lý khi chọn "REPORT"
+                  },
+                );
+              } else if (index == 1 && isOwnPost) {
+                //DELETE
+                return ListTile(
+                  leading: const Icon(Icons.delete), //Icon cho tùy chọn "DELETE POST"
+                  title: const Text("DELETE POST"),
+                  onTap: () {
+                    Navigator.of(context).pop(); // Đóng dialog
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text("Delete Post?"),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text("Cancel!"),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              widget.onDeletePressed!();
+                              Navigator.popUntil(context, (route) => route.isFirst);
+                            },
+                            child: const Text("Delete"),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              }else if (index == 2 && isOwnPost) {
+                //LOCK CMT
+                return ListTile(
+                  leading: const Icon(Icons.lock), //icon cho tùy chọn "lock cmt"
+                  title: const Text("LOCK COMMENT"),
+                  onTap: () {
+                    Navigator.of(context).pop(); // close dialog
 
-            //delete post
-            TextButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text("Delete Post?"),
-                      actions: [
-                        // cancel button
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text("Cancel!"),
-                        ),
-
-                        // delete button
-                        TextButton(
-                          onPressed: () {
-                            widget.onDeletePressed!();
-                            Navigator.popUntil(
-                                context, (route) => route.isFirst);
-                          },
-                          child: const Text("Delete"),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                child: Text(
-                  "DELETE POST",
-                  style: TextStyle(
-                    fontSize: 25,
-                    color: Theme.of(context).colorScheme.inversePrimary,
-                  ),
-                ))
-          ],
-        )),
+                  },
+                );
+              }
+            },
+          ),
+        ),
         actions: [
-          //cancel button
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Cancel!"),
+            child: const Text("Cancel"),
           ),
         ],
       ),
