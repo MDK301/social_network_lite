@@ -61,27 +61,71 @@ class _PostTileState extends State<PostTile> {
     }
   }
 
-  //===========DELETE==============
+  //===========OPTION==============
   //show option box
-  void showOptions() {
+  void showOptions(bool ownPost) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Delete Post?"),
+        content: SizedBox(
+            child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextButton(
+              onPressed: () {},
+              child: Container(
+                child: Text(
+                  "REPORT",
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                  ),
+                ),
+              ),
+            ),
+
+            //delete post
+            TextButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text("Delete Post?"),
+                      actions: [
+                        // cancel button
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text("Cancel!"),
+                        ),
+
+                        // delete button
+                        TextButton(
+                          onPressed: () {
+                            widget.onDeletePressed!();
+                            Navigator.popUntil(
+                                context, (route) => route.isFirst);
+                          },
+                          child: const Text("Delete"),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                child: Text(
+                  "DELETE POST",
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: Theme.of(context).colorScheme.inversePrimary,
+                  ),
+                ))
+          ],
+        )),
         actions: [
-          // cancel button
+          //cancel button
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text("Cancel!"),
-          ),
-
-          // delete button
-          TextButton(
-            onPressed: () {
-              widget.onDeletePressed!();
-              Navigator.of(context).pop();
-            },
-            child: const Text("Delete"),
           ),
         ],
       ),
@@ -238,15 +282,14 @@ class _PostTileState extends State<PostTile> {
 
                   const Spacer(),
 
-                  //delete button
-                  if (isOwnPost)
-                    GestureDetector(
-                      onTap: showOptions,
-                      child: Icon(
-                        Icons.delete,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    )
+                  //option button
+                  IconButton(
+                    onPressed: () {
+                      showOptions(isOwnPost);
+                    },
+                    icon: Icon(Icons.more_horiz),
+                    color: Theme.of(context).colorScheme.primary,
+                  )
                 ],
               ),
             ),
@@ -273,7 +316,6 @@ class _PostTileState extends State<PostTile> {
                   width: 50,
                   child: Row(
                     children: [
-
                       //LIKE BUTTON
                       GestureDetector(
                         onTap: toggleLikePost,
@@ -306,23 +348,28 @@ class _PostTileState extends State<PostTile> {
                 ),
 
                 // comment button
-                GestureDetector(
-                    onTap: openNewCommentBox,
-                    child: Icon(
-                      Icons.comment,
-                      color: Theme.of(context).colorScheme.primary,
-                    )),
+                widget.post.lock == "false"
+                    ? GestureDetector(
+                        onTap: openNewCommentBox,
+                        child: Icon(
+                          Icons.comment,
+                          color: Theme.of(context).colorScheme.primary,
+                        ))
+                    : SizedBox(),
+
                 SizedBox(
                   width: 5,
                 ),
 
-                Text(
-                  widget.post.comments.length.toString(),
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 12,
-                  ),
-                ),
+                widget.post.lock == "false"
+                    ? Text(
+                        widget.post.comments.length.toString(),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 12,
+                        ),
+                      )
+                    : SizedBox(),
 
                 const Spacer(),
 
@@ -401,4 +448,3 @@ class _PostTileState extends State<PostTile> {
     );
   }
 }
-
