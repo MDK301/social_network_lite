@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_network_lite/featured/auth/domain/entities/app_user.dart';
@@ -13,6 +14,8 @@ import 'package:social_network_lite/featured/profile/presentation/cubits/profile
 import 'package:social_network_lite/featured/profile/presentation/pages/profile_page.dart';
 
 import '../../domain/entities/comment.dart';
+import '../../domain/entities/report.dart';
+
 //container + padding + decoration + border = chỗ chứa + space + trang tri + khung
 // child: Container(
 // // padding:
@@ -76,6 +79,62 @@ class _PostTileState extends State<PostTile> {
   //===========OPTION==============
   //show option box
   void showOptions(bool ownPost) {
+    final TextEditingController reportController = TextEditingController();
+
+    //this is for Report post
+    Future<void> createReport(BuildContext context) async {
+
+      //taoreport
+      final report = Report(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        userReportId: currentUser!.uid,
+        postId: widget.post.id,
+        postOwnerId: widget.post.userId,
+        reportContent: reportController.text,
+        timeCreateReport: DateTime.now(),
+      );
+
+      try {
+
+        await FirebaseFirestore.instance.collection('reports').add(report.toJson());
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Report submitted successfully!')),
+        );
+        Navigator.popUntil(
+            context, (route) => route.isFirst);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to submit report: $e')),
+        );
+      }
+    }
+
+    //this is for lock cmt
+    Future<void> lockComment(BuildContext context) async {
+      try {
+        final CollectionReference postsCollection =
+            FirebaseFirestore.instance.collection('posts');
+        final postDoc = await postsCollection.doc(widget.post.id).get();
+        final post = Post.fromJson(postDoc.data() as Map<String, dynamic>);
+        if (postDoc.exists && postDoc.data() != null) {
+          if (post.lock == "false") {
+            await postsCollection.doc(widget.post.id).update({
+              'lock': "true",
+            });
+          } else {
+            await postsCollection.doc(widget.post.id).update({
+              'lock': "false",
+            });
+          }
+        } else {
+          print("post empty");
+        }
+      } catch (e) {
+        throw Exception(e);
+      }
+    }
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -88,20 +147,60 @@ class _PostTileState extends State<PostTile> {
               if (index == 0) {
                 //REPORT
                 return ListTile(
-                  leading: const Icon(Icons.report), // Icon cho tùy chọn "REPORT"
+                  leading: const Icon(Icons.report),
                   title: const Text("REPORT"),
                   onTap: () {
-                    Navigator.of(context).pop(); // Đóng dialog
-                    // Xử lý khi chọn "REPORT"
+                    Navigator.of(context).pop(); //Đóng dialog
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text("REPORT"),
+                        content: SizedBox(
+                          width: 400,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // TextField để nhập nội dung report
+                              TextField(
+                                controller: reportController,
+                                decoration: InputDecoration(
+                                  hintText: "What's wrong?",
+                                  hintStyle: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
+                        actions: [
+                          // Nút Cancel
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text("Cancel"),
+                          ),
+                          // Nút Send
+                          TextButton(
+                            onPressed: () {
+                              createReport(context);
+                              // Navigator.popUntil(
+                              //     context, (route) => route.isFirst);
+                            },
+                            child: const Text("Send"),
+                          ),
+                        ],
+                      ),
+                    );
                   },
                 );
               } else if (index == 1 && isOwnPost) {
                 //DELETE
                 return ListTile(
-                  leading: const Icon(Icons.delete), //Icon cho tùy chọn "DELETE POST"
+                  leading: const Icon(Icons.delete),
                   title: const Text("DELETE POST"),
                   onTap: () {
-                    Navigator.of(context).pop(); // Đóng dialog
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
@@ -114,7 +213,8 @@ class _PostTileState extends State<PostTile> {
                           TextButton(
                             onPressed: () {
                               widget.onDeletePressed!();
-                              Navigator.popUntil(context, (route) => route.isFirst);
+                              Navigator.popUntil(
+                                  context, (route) => route.isFirst);
                             },
                             child: const Text("Delete"),
                           ),
@@ -123,17 +223,28 @@ class _PostTileState extends State<PostTile> {
                     );
                   },
                 );
-              }else if (index == 2 && isOwnPost) {
+              } else if (index == 2 && isOwnPost) {
                 //LOCK CMT
                 return ListTile(
-                  leading: const Icon(Icons.lock), //icon cho tùy chọn "lock cmt"
+                  leading: const Icon(Icons.lock),
+                  //icon cho tùy chọn "lock cmt"
                   title: const Text("LOCK COMMENT"),
-                  onTap: () {
+                  onTap: () async {
+                    lockComment(context);
+                    //update user
+                    final fetchedUser =
+                        await profileCubit.getUserProfile(widget.post.userId);
+                    if (fetchedUser != null) {
+                      setState(() {
+                        postUser = fetchedUser;
+                      });
+                    }
+                    postCubit.fetchAllPosts();
                     Navigator.of(context).pop(); // close dialog
-
                   },
                 );
               }
+              return null;
             },
           ),
         ),
@@ -167,6 +278,7 @@ class _PostTileState extends State<PostTile> {
         .toggleLikePost(widget.post.id, currentUser!.uid)
         .catchError((error) {
       //co loi tra lai old value
+
       setState() {
         if (isLiked) {
           widget.post.likes.add(currentUser!.uid); //re-unlike
@@ -217,7 +329,12 @@ class _PostTileState extends State<PostTile> {
   }
 
   //add comment
-  void addComment() {
+  void addComment() async {
+    final CollectionReference postsCollection =
+        FirebaseFirestore.instance.collection('posts');
+    final postDoc = await postsCollection.doc(widget.post.id).get();
+    final post = Post.fromJson(postDoc.data() as Map<String, dynamic>);
+
     // create a new comment
     final newComment = Comment(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -229,8 +346,21 @@ class _PostTileState extends State<PostTile> {
     );
 
     // add comment using cubit
-    if (commentTextController.text.isNotEmpty) {
-      postCubit.addComment(widget.post.id, newComment);
+    if (post.lock == "false") {
+      if (commentTextController.text.isNotEmpty) {
+        postCubit.addComment(widget.post.id, newComment);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Comment save successfully!'),
+          ),
+        );
+      } else {}
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Comment on this post has been lock by author!'),
+        ),
+      );
     }
   }
 

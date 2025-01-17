@@ -8,14 +8,11 @@ import '../../auth/domain/entities/app_user.dart';
 class FirebasePostRepo implements PostRepo {
   AppUser? currentUser;
 
-
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   // store the posts in a collection called 'posts'
   final CollectionReference postsCollection =
       FirebaseFirestore.instance.collection('posts');
-
-
 
   @override
   Future<void> createPost(Post post) async {
@@ -68,52 +65,51 @@ class FirebasePostRepo implements PostRepo {
   }
 
   @override
-  Future<void> toggleLikePost(String postId, String userId)async {
-   try{
-
-     // get the post document from firestore
-     final postDoc = await postsCollection.doc(postId).get();
-     if (postDoc.exists) {
-       final post = Post.fromJson(postDoc.data() as Map<String, dynamic>);
-       // check if user has already like this post
-       final hasLiked = post.likes.contains(userId);
-       // update the likes list
-       if (hasLiked) {
-         post.likes.remove(userId); // unlike
-       } else {
-         post.likes.add(userId); // like
-       }
-       // update the post document with the new like list
-       await postsCollection.doc(postId).update({
-         'likes': post.likes,
-       });
-     } else {
-       throw Exception("Post not found");
-
-     }
-
-   }catch(e){
-     throw Exception("error toggling like: $e");
-   }
+  Future<void> toggleLikePost(String postId, String userId) async {
+    try {
+      // get the post document from firestore
+      final postDoc = await postsCollection.doc(postId).get();
+      if (postDoc.exists) {
+        final post = Post.fromJson(postDoc.data() as Map<String, dynamic>);
+        // check if user has already like this post
+        final hasLiked = post.likes.contains(userId);
+        // update the likes list
+        if (hasLiked) {
+          post.likes.remove(userId); // unlike
+        } else {
+          post.likes.add(userId); // like
+        }
+        // update the post document with the new like list
+        await postsCollection.doc(postId).update({
+          'likes': post.likes,
+        });
+      } else {
+        throw Exception("Post not found");
+      }
+    } catch (e) {
+      throw Exception("error toggling like: $e");
+    }
   }
 
   @override
-  Future<void> addComments(String postId, Comment comment)async {
+  Future<void> addComments(String postId, Comment comment) async {
     try {
       // get post document
       final postDoc = await postsCollection.doc(postId).get();
-
       if (postDoc.exists) {
         // convert json object -> post
         final post = Post.fromJson(postDoc.data() as Map<String, dynamic>);
 
-        // add the new comment
-        post.comments.add(comment);
 
-        // update the post document in firestore
-        await postsCollection.doc(postId).update({
-          'comments': post.comments.map((comment) => comment.toJson()).toList()
-        });
+          // add the new comment
+          post.comments.add(comment);
+
+          // update the post document in firestore
+          await postsCollection.doc(postId).update({
+            'comments':
+                post.comments.map((comment) => comment.toJson()).toList()
+          });
+
       } else {
         throw Exception("Post not found");
       }
@@ -123,19 +119,19 @@ class FirebasePostRepo implements PostRepo {
   }
 
   @override
-  Future<void> deleteComments(String postId, String commentId)async {
+  Future<void> deleteComments(String postId, String commentId) async {
     try {
-      // get post document  
+      // get post document
       final postDoc = await postsCollection.doc(postId).get();
 
       if (postDoc.exists) {
-        // convert json object -> post  
+        // convert json object -> post
         final post = Post.fromJson(postDoc.data() as Map<String, dynamic>);
 
-        // add the new comment  
-        post.comments.removeWhere((comment)=>comment.id==commentId);
+        // add the new comment
+        post.comments.removeWhere((comment) => comment.id == commentId);
 
-        // update the post document in firestore  
+        // update the post document in firestore
         await postsCollection.doc(postId).update({
           'comments': post.comments.map((comment) => comment.toJson()).toList()
         });
@@ -146,5 +142,4 @@ class FirebasePostRepo implements PostRepo {
       throw Exception("Error deleting comment: $e");
     }
   }
-
 }

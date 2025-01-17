@@ -66,16 +66,16 @@ class Post {
         [];
 
     return Post(
-      id: json['id'],
-      userId: json['userId'],
-      userName: json['name'],
-      text: json['text'],
-      imageUrl: json['imageUrl'],
-      timestamp: (json['timestamp'] as Timestamp).toDate(),
-      likes:List<String>.from(json['likes'] ?? []),
-      comments:comments,
-      privacy:json['privacy'],
-      lock:json['lock'],
+      id: json['id'] ?? '',
+      userId: json['userId'] ?? '',
+      userName: json['name'] ?? '',
+      text: json['text'] ?? '',
+      imageUrl: json['imageUrl'] ?? '',
+      timestamp: (json['timestamp'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      likes: List<String>.from(json['likes'] ?? []),
+      comments: comments,
+      privacy: json['privacy'] ?? '',
+      lock: json['lock'] ?? 'false',
     );
   }
 
