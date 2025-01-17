@@ -18,9 +18,9 @@ class Report {
     required this.timeCreateReport,
   });
 
-  Report copyWith({String? imageUrl}) {
+  Report copyWith({String? id}) {
     return Report(
-      id: id,
+      id: id?? this.id,
       userReportId: userReportId,
       postId: postId,
       postOwnerId: postOwnerId,

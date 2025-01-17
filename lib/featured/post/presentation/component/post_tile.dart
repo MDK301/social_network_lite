@@ -95,8 +95,17 @@ class _PostTileState extends State<PostTile> {
       );
 
       try {
+        final docRef = await FirebaseFirestore.instance
+            .collection('reports').add(report.toJson());
 
-        await FirebaseFirestore.instance.collection('reports').add(report.toJson());
+        // Get the auto-generated ID
+        final reportId = docRef.id;
+
+        // Update the report object with the ID
+        final updatedReport = report.copyWith(id: reportId);
+
+        // Update the document in Firestore with the ID
+        await docRef.update(updatedReport.toJson());
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Report submitted successfully!')),
