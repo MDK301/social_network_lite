@@ -25,9 +25,9 @@ import '../component/my_drawer.dart';
 
 //cập nhật avatar current user at my drawer. ==================
 
-//khoa binh luan ==================
+//khoa binh luan ================== OK
 
-//report bài viet ==================
+//report bài viet ================== OK
 
 // xac thuc email ================== OK
 
