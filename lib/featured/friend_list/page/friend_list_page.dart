@@ -44,6 +44,46 @@ class _FriendListPageState extends State<FriendListPage> {
       print('Error getting request list: $e');
     }
   }
+
+  Future<void> removeFriend(String currentUserId, String friendUserId) async {
+    try {
+      final currentUserDoc = FirebaseFirestore.instance.collection('users').doc(currentUserId);
+      final friendRequestSnapshot = await currentUserDoc.get();
+      final friendRequestList = friendRequestSnapshot.get('friendlist') as List<dynamic>;
+
+      // Remove the friend's UID from the list
+      friendRequestList.remove(friendUserId);
+
+      // Update the friendlist field in Firestore
+      await currentUserDoc.update({'friendlist': friendRequestList});
+
+      // Remove the current's UID from the list
+
+      final secondUserDoc = FirebaseFirestore.instance.collection('users').doc(friendUserId);
+      final secondRequestSnapshot = await secondUserDoc.get();
+      final secondRequestList = secondRequestSnapshot.get('friendlist') as List<dynamic>;
+
+      // Remove the current's UID from the list
+      secondRequestList.remove(currentUserId);
+
+      // Update the friendlist field in Firestore
+      await secondUserDoc.update({'friendlist': secondRequestList});
+
+      // Update the UI
+      getFriendList(currentUser!.uid);
+
+
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Friend removed successfully!')),
+      );
+    } catch (e) {
+      print('Error removing friend: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to remove friend: $e')),
+      );
+    }
+  }
 @override
   void initState() {
   getFriendList(currentUser!.uid);
@@ -98,7 +138,29 @@ class _FriendListPageState extends State<FriendListPage> {
                           ),
                           );
 
-                        }
+                        },onLongPress: (){
+                          showDialog(context: context, builder: (context)=>AlertDialog(
+                            title: const Text("Delete this friend"),
+                            content: const Text("Remove this person from you're friend list?"),
+                            actions: [
+                              // Nút Cancel
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text("Cancel"),
+                              ),
+                              // Nút Send
+                              TextButton(
+                                onPressed: () {
+                                  removeFriend(currentUser!.uid,friendList[index].uid);
+                                  Navigator.of(context).pop();
+                                  // Navigator.popUntil(
+                                  //     context, (route) => route.isFirst);
+                                },
+                                child: const Text("Yes"),
+                              ),
+                            ],
+                          ));
+                    },
                     )
                 );
               },

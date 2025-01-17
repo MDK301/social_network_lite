@@ -52,99 +52,101 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return ConstrainedScaffold(
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              // logo
-              Icon(
-              Icons.lock_open_rounded,
-              size: 80,
-              color: Theme
-                  .of(context)
-                  .colorScheme
-                  .primary,
-            ),
-            // Icon
-
-            // welcome back msg
-            Text(
-              "Welcome back, you've been missed!",
-              style: TextStyle(
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                // logo
+                Icon(
+                Icons.lock_open_rounded,
+                size: 80,
                 color: Theme
                     .of(context)
                     .colorScheme
                     .primary,
-                fontSize: 16,
-                fontStyle: FontStyle.normal,
-              ), // TextStyle
-            ),
-            const SizedBox(height: 25),
+              ),
+              // Icon
 
-            // email textfield
-            MyTextField(
-              controller: emailController,
-              hintText: "Email",
-              obscureText: false,
-            ),
-            const SizedBox(height: 25),
-
-            // pw textfield
-            MyTextField(
-              controller: pwController,
-              hintText: "Password",
-              obscureText: true,
-            ),
-            const SizedBox(height: 25),
-
-            // login button
-            MyButton(onTap: login
-                , text: "Login"),
-            Container(
-              alignment: Alignment.centerRight,
-              child: TextButton( onPressed: ()
-              {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                );
-              },
-              child: Text("Quên mật khẩu"),),),
-          const SizedBox(height: 50),
-
-
-          // not a member? register now
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+              // welcome back msg
               Text(
-                "Not a member?",
-                style:
-                TextStyle(color: Theme
-                    .of(context)
-                    .colorScheme
-                    .primary),
-              ), GestureDetector(
-                onTap: widget.togglePages,
-                child: Text(
-                  " Register now",
+                "Welcome back, you've been missed!",
+                style: TextStyle(
+                  color: Theme
+                      .of(context)
+                      .colorScheme
+                      .primary,
+                  fontSize: 16,
+                  fontStyle: FontStyle.normal,
+                ), // TextStyle
+              ),
+              const SizedBox(height: 25),
+
+              // email textfield
+              MyTextField(
+                controller: emailController,
+                hintText: "Email",
+                obscureText: false,
+              ),
+              const SizedBox(height: 25),
+
+              // pw textfield
+              MyTextField(
+                controller: pwController,
+                hintText: "Password",
+                obscureText: true,
+              ),
+              const SizedBox(height: 25),
+
+              // login button
+              MyButton(onTap: login
+                  , text: "Login"),
+              Container(
+                alignment: Alignment.centerRight,
+                child: TextButton( onPressed: ()
+                {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                  );
+                },
+                child: Text("Quên mật khẩu"),),),
+            const SizedBox(height: 50),
+
+
+            // not a member? register now
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Not a member?",
                   style:
                   TextStyle(color: Theme
                       .of(context)
                       .colorScheme
-                      .inversePrimary,
-                      fontWeight: FontWeight.bold),
+                      .primary),
+                ), GestureDetector(
+                  onTap: widget.togglePages,
+                  child: Text(
+                    " Register now",
+                    style:
+                    TextStyle(color: Theme
+                        .of(context)
+                        .colorScheme
+                        .inversePrimary,
+                        fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
+              ],
+            )
             ],
-          )
-          ],
+          ),
         ),
-      ),
-    ),)
+            ),),
+      )
     ,
     );
   }

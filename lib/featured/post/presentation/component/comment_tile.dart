@@ -145,15 +145,18 @@ class _CommentTileState extends State<CommentTile> {
       child: Row(
         children: [
           // name
-          Text(widget.comment.userName,
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          Container(
+            width: 90,
+            child: Text(widget.comment.userName,
+                style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
 
           const SizedBox(
             width: 10,
           ),
 
           // comment text
-          Container(width: 200,
+          Container(width: 150,
               child: Text(widget.comment.text,softWrap: true,)),
 
           const Spacer(),
