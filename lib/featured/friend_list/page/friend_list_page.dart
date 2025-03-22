@@ -18,21 +18,26 @@ class _FriendListPageState extends State<FriendListPage> {
   late final authCubit = context.read<AuthCubit>();
   late AppUser? currentUser = authCubit.currentUser;
 
-  final List<ProfileUser> friendList=[];
+  final List<ProfileUser> friendList = [];
 
   Future<void> getFriendList(String uid) async {
     try {
       // Get the current user's document using the user's UID
-      final currentUserDoc = FirebaseFirestore.instance.collection('users').doc(uid);
+      final currentUserDoc =
+          FirebaseFirestore.instance.collection('users').doc(uid);
 
       // Get the friendRequest field
       final friendRequestSnapshot = await currentUserDoc.get();
-      final friendRequestList = friendRequestSnapshot.get('friendlist') as List<dynamic>;
+      final friendRequestList =
+          friendRequestSnapshot.get('friendlist') as List<dynamic>;
 
       // Fetch user information for each UID in friendRequestList
       final profileUsers = await Future.wait(friendRequestList.map((uid) async {
-        final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid as String).get();
-        return ProfileUser.fromJson(userDoc.data()as Map<String,dynamic>);
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid as String)
+            .get();
+        return ProfileUser.fromJson(userDoc.data() as Map<String, dynamic>);
       }));
 
       setState(() {
@@ -47,9 +52,11 @@ class _FriendListPageState extends State<FriendListPage> {
 
   Future<void> removeFriend(String currentUserId, String friendUserId) async {
     try {
-      final currentUserDoc = FirebaseFirestore.instance.collection('users').doc(currentUserId);
+      final currentUserDoc =
+          FirebaseFirestore.instance.collection('users').doc(currentUserId);
       final friendRequestSnapshot = await currentUserDoc.get();
-      final friendRequestList = friendRequestSnapshot.get('friendlist') as List<dynamic>;
+      final friendRequestList =
+          friendRequestSnapshot.get('friendlist') as List<dynamic>;
 
       // Remove the friend's UID from the list
       friendRequestList.remove(friendUserId);
@@ -59,9 +66,11 @@ class _FriendListPageState extends State<FriendListPage> {
 
       // Remove the current's UID from the list
 
-      final secondUserDoc = FirebaseFirestore.instance.collection('users').doc(friendUserId);
+      final secondUserDoc =
+          FirebaseFirestore.instance.collection('users').doc(friendUserId);
       final secondRequestSnapshot = await secondUserDoc.get();
-      final secondRequestList = secondRequestSnapshot.get('friendlist') as List<dynamic>;
+      final secondRequestList =
+          secondRequestSnapshot.get('friendlist') as List<dynamic>;
 
       // Remove the current's UID from the list
       secondRequestList.remove(currentUserId);
@@ -71,8 +80,6 @@ class _FriendListPageState extends State<FriendListPage> {
 
       // Update the UI
       getFriendList(currentUser!.uid);
-
-
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Friend removed successfully!')),
@@ -84,89 +91,98 @@ class _FriendListPageState extends State<FriendListPage> {
       );
     }
   }
-@override
+
+  @override
   void initState() {
-  getFriendList(currentUser!.uid);
+    getFriendList(currentUser!.uid);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("F R I E N D  L I S T"),),
+      appBar: AppBar(
+        title: Text("F R I E N D  L I S T"),
+        actions: [
+          IconButton(onPressed: () {}, icon: Icon(Icons.sunny_snowing))
+        ],
+      ),
       body: Column(
-        children:  [
+        children: [
           Expanded(
-            child:friendList.isNotEmpty ?
-            ListView.builder(
-              itemCount: friendList.length,
-              itemBuilder: (context, index) {
-                
-                //get indivitual chat UwU~
+              child: friendList.isNotEmpty
+                  ? ListView.builder(
+                      itemCount: friendList.length,
+                      itemBuilder: (context, index) {
+                        //get indivitual chat UwU~
 
-                // image
-                return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child:
-                    ListTile(
-                        title:  Text(friendList[index].name),
-                        subtitle: Text(friendList[index].email),
-                        subtitleTextStyle:
-                        TextStyle(color: Theme.of(context).colorScheme.primary),
-                        leading: friendList[index].profileImageUrl != ''
-                            ? ClipOval(
-                            child: Image.network(
-                              friendList[index].profileImageUrl,
-                              fit: BoxFit.cover,
-                              height: 45,
-                              width: 45,
-                            ))
-                            : const Icon(Icons.person),
-
-                        trailing: Icon(
-                          Icons.arrow_forward,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-
-                        onTap: () {
-
-                          Navigator.of(context).pop(); // Close the dialog
-                          Navigator.push(context,MaterialPageRoute(
-                            builder: (context) => ProfilePage(
-                              uid:  friendList[index].uid,
-                            ),
-                          ),
-                          );
-
-                        },onLongPress: (){
-                          showDialog(context: context, builder: (context)=>AlertDialog(
-                            title: const Text("Delete this friend"),
-                            content: const Text("Remove this person from you're friend list?"),
-                            actions: [
-                              // Nút Cancel
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text("Cancel"),
+                        // image
+                        return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListTile(
+                              title: Text(friendList[index].name),
+                              subtitle: Text(friendList[index].email),
+                              subtitleTextStyle: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary),
+                              leading: friendList[index].profileImageUrl != ''
+                                  ? ClipOval(
+                                      child: Image.network(
+                                      friendList[index].profileImageUrl,
+                                      fit: BoxFit.cover,
+                                      height: 45,
+                                      width: 45,
+                                    ))
+                                  : const Icon(Icons.person),
+                              trailing: Icon(
+                                Icons.arrow_forward,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
-                              // Nút Send
-                              TextButton(
-                                onPressed: () {
-                                  removeFriend(currentUser!.uid,friendList[index].uid);
-                                  Navigator.of(context).pop();
-                                  // Navigator.popUntil(
-                                  //     context, (route) => route.isFirst);
-                                },
-                                child: const Text("Yes"),
-                              ),
-                            ],
-                          ));
-                    },
+                              onTap: () {
+                                Navigator.of(context).pop(); // Close the dialog
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ProfilePage(
+                                      uid: friendList[index].uid,
+                                    ),
+                                  ),
+                                );
+                              },
+                              onLongPress: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                          title:
+                                              const Text("Delete this friend"),
+                                          content: const Text(
+                                              "Remove this person from you're friend list?"),
+                                          actions: [
+                                            // Nút Cancel
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                              child: const Text("Cancel"),
+                                            ),
+                                            // Nút Send
+                                            TextButton(
+                                              onPressed: () {
+                                                removeFriend(currentUser!.uid,
+                                                    friendList[index].uid);
+                                                Navigator.of(context).pop();
+                                                // Navigator.popUntil(
+                                                //     context, (route) => route.isFirst);
+                                              },
+                                              child: const Text("Yes"),
+                                            ),
+                                          ],
+                                        ));
+                              },
+                            ));
+                      },
                     )
-                );
-              },
-            ):  Container(child: Text("Chua co ban! Hay them ban vao"),)
-
-          ),
+                  : Container(
+                      child: Text("Chua co ban! Hay them ban vao"),
+                    )),
         ],
       ),
     );
